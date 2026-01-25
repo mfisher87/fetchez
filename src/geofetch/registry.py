@@ -234,6 +234,20 @@ class GeoFetchRegistry:
             'urls': {'home': 'https://geoservice.dlr.de/web/maps/wsf2019'}
         },
 
+        ## Crowd-Sourced Bathymetry
+        'csb': {
+            'mod': 'geofetch.modules.csb', 
+            'cls': 'CSB', 
+            'category': 'Bathymetry',
+            'desc': 'NOAA Crowd Sourced Bathymetry (CSB)',
+            'agency': 'NOAA NCEI',
+            'tags': ['bathymetry', 'crowd-sourced', 'citizen-science', 'csv', 'depth', 'noaa'],
+            'region': 'Global',
+            'resolution': 'Varies',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://www.ngdc.noaa.gov/iho/'}
+        },
+        
         # No Region Modules:
         
         # Cpt-City

@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geofetch"
+version = "2.0.0"
+description = "Geo-Spatial Data Fetching"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [
+    {name = "Matthew Love", email = "matthew.love@colorado.edu"},
+    {name = "Christopher Amante", email = "christopher.amante@colorado.edu"},
+    {name = "Elliot Lim", email = "elliot.lim@colorado.edu"},
+    {name = "Michael MacFerrin", email = "michael.macferrin@colorado.edu"},
+]
+maintainers = [
+    {name = "Matthew Love", email = "matthew.love@colorado.edu"},
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+
+dependencies = [
+    "requests[security]",
+    "lxml",
+    "tqdm",
+    "shapely",
+]
+
+keywords = ["Geospatial"]
+
+[project.optional-dependencies]
+boto3 = ["boto3"]
+mercantile = ["mercantile"]
+utm = ["utm"]
+
+[project.scripts]
+# CLI Entry Points
+gfetch = "geofetch.cli:geofetch_cli"
+geofetch = "geofetch.cli:geofetch_cli"
+bing_bfp = "geofetch.modules.bingbfp:bing_bfp_cli"
+osm_coast = "geofetch.modules.osm:osm_coast_cli"
+
+[project.urls]
+Homepage = "https://github.com/ciresdem/geofetch"
+Issues = "https://github.com/ciresdem/geofetch/issues"
+
+# --- Setuptools Configuration for 'src' layout ---
+
+[tool.setuptools.packages.find]
+where = ["src"]  # Look for packages inside the 'src' folder
+include = ["geofetch*"]  # Include the package named 'geofetch'
+exclude = ["tests*", "docs*", "scripts*"]
+namespaces = false 
+
+[tool.setuptools.package-data]
+# Keys are package names. Values are globs relative to that package root.
+# Example: src/geofetch/data/*.geojson -> "data/*.geojson"
+geofetch = ["data/*.geojson"]
