@@ -24,7 +24,7 @@ Originally part of the [CUDEM](https://github.com/ciresdem/cudem) project, GeoFe
 
 ---
 
-## 🚀 Features
+## 💡 Features
 
 * One command to fetch data from 40+ different sources (SRTM, GMRT, NOAA NOS, USGS 3DEP, Copernicus, etc.).
 * Built-in metadata registry allows you to search for datasets by tag, agency, resolution, or license.
@@ -33,6 +33,7 @@ Originally part of the [CUDEM](https://github.com/ciresdem/cudem) project, GeoFe
 * Minimal dependencies (`requests`, `tqdm`, `lxml`). Optional `shapely` support for precise spatial filtering.
 
 ---
+
 
 ## 📦 Installation
 
