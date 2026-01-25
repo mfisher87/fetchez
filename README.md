@@ -57,15 +57,28 @@ geofetch -R <region> <module> [options]
 ### Examples
 
 1. Fetch SRTM+ Data for a Bounding BoxBash# Region Format: West/East/South/North
-```geofetch -R -105.5/-104.5/39.5/40.5 srtm_plus```
+
+```bash
+geofetch -R -105.5/-104.5/39.5/40.5 srtm_plus
+```
 
 2. Discover Data SourcesBash# View detailed metadata card for a module
-```geofetch --info gmrt```
+
+```bash
+geofetch --info gmrt
+```
 
 3. Fetch Data Using a Place NameBash# Automatically resolves "Boulder, CO" to a bounding box
-```geofetch -R loc:"Boulder, CO" copernicus --datatype=1```
 
-4. List Available ModulesBashgeofetch --modules
+```bash
+geofetch -R loc:"Boulder, CO" copernicus --datatype=1
+```
+
+4. List Available Modules
+
+```bash
+geofetch --modules
+```
 
 ### Common Flags
 
