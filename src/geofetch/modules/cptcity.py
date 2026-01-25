@@ -58,7 +58,6 @@ class CPTCity(core.FetchModule):
             return
             
         try:
-            # Parse simple XML (non-ISO)
             root = lxml.etree.fromstring(req_xml.content)
             cpt_node = root.find('cpt')
             
@@ -105,7 +104,7 @@ class CPTCity(core.FetchModule):
                 if not f.endswith('.cpt') and not self.query: continue
 
                 f_url = f"{CPT_PUB_URL}{f}"
-                f_fn = f.split('/')[-1] # Flatten directory structure
+                f_fn = f.split('/')[-1] 
                 
                 self.add_entry_to_results(
                     url=f_url,
