@@ -549,8 +549,23 @@ class Fetch:
                     # If we got here without exception, check size
                     if check_size and total_size > 0:
                         final_size = os.path.getsize(part_fn)
-                        if final_size != total_size:
+                        if final_size < total_size:
+                            # If smaller, the connection was most likely cut.
                             raise IOError(f"Incomplete download: {final_size}/{total_size} bytes")
+                        
+                        elif final_size > total_size:
+                            # If larger, it was likely decompressed on the fly (GZIP).
+                            logger.debug(
+                                f"File size ({final_size}) > Header ({total_size}). "
+                                "Assuming transparent decompression."
+                            )
+                            
+                        else:
+                            pass
+                    # if check_size and total_size > 0:
+                    #     final_size = os.path.getsize(part_fn)
+                    #     if final_size != total_size:
+                    #         raise IOError(f"Incomplete download: {final_size}/{total_size} bytes")
                     
                     os.rename(part_fn, dst_fn)
                     return 0
