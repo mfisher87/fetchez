@@ -26,11 +26,11 @@ Originally part of the [CUDEM](https://github.com/ciresdem/cudem) project, GeoFe
 
 ## 🚀 Features
 
-* **Unified Interface:** One command to fetch data from 40+ different sources (SRTM, GMRT, NOAA NOS, USGS 3DEP, Copernicus, etc.).
-* **Rich Data Catalog:** Built-in metadata registry allows you to search for datasets by tag, agency, resolution, or license.
-* **Spatial Indexing (FRED):** Built-in "Fetches Remote Elevation Datalist" (FRED) automatically indexes remote files for spatial querying without hitting APIs repeatedly.
-* **Smart Resuming:** Robust download engine with automatic retries, timeout handling, and byte-range support for resuming interrupted downloads.
-* **Lightweight Core:** minimal dependencies (`requests`, `tqdm`, `lxml`). Optional `shapely` support for precise spatial filtering.
+* One command to fetch data from 40+ different sources (SRTM, GMRT, NOAA NOS, USGS 3DEP, Copernicus, etc.).
+* Built-in metadata registry allows you to search for datasets by tag, agency, resolution, or license.
+* Built-in "Fetches Remote Elevation Datalist" (FRED) automatically indexes remote files for spatial querying without hitting APIs repeatedly.
+* Built-in download engine with automatic retries, timeout handling, and byte-range support for resuming interrupted downloads.
+* Minimal dependencies (`requests`, `tqdm`, `lxml`). Optional `shapely` support for precise spatial filtering.
 
 ---
 
