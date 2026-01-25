@@ -30,7 +30,7 @@ If you find a bug, please create a new issue on GitHub. Include:
 * Your operating system and Python version.
 * (If possible) The specific region (`-R`) that caused the failure.
 
-## 🚀 Adding a New Fetch Module
+## 🌎 Adding a New Fetch Module
 
 The most common contribution is adding support for a new data source.
 
