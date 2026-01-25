@@ -103,7 +103,7 @@ We support a growing federation of data sources:
 
 The power of GeoFetch lies in its registry. The more modules we have, the more powerful the tool becomes for the entire geospatial community.
 
-**Do you have a favorite public dataset?** Don't keep the script to yourself—turn it into a GeoFetch module!
+**Do you have a favorite public dataset?** Don't keep the script to yourself; turn it into a GeoFetch module!
 
 ### How to Contribute
 
