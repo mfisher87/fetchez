@@ -30,6 +30,7 @@ It unifies over **40 different data sources**â€”from NASA, USGS, NOAA, and ESAâ€
 
 * [View on GitHub](https://github.com/ciresdem/geofetch)
 * [View Modules](https://github.com/ciresdem/geofetch/tree/main/src/geofetch/modules)
+* [Join Zulip Channel](https://cudem.zulipchat.com/) - Join our Zulip Channel to connect and engage with us.
 
 ---
 
