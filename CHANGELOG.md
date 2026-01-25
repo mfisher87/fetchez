@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - csb module
 - geofetch.spatial 'region_to_wkt' method
-- geofetch.core fetch_req now supports 'method' arg	
+- geofetch.core fetch_req now supports 'method' arg
+- geofetch.spatial 'region_center' method
+- buouy module
 	
 ## [2.0.0] - 2026-01-24
 ### Added

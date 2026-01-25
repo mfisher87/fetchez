@@ -253,6 +253,15 @@ def buffer_region(bbox: Tuple, pct: float = 5) -> Tuple[float, float, float, flo
     return (xmin - avg_buf, xmax + avg_buf, ymin - avg_buf, ymax + avg_buf)
 
 
+def region_center(region: Tuple[float, float, float, float]):
+    """Calculate the center of a region"""
+
+    w, e, s, n = region
+    center_lon = (w + e) / 2
+    center_lat = (s + n) / 2
+
+    return center_lon, center_lat
+
 def region_to_shapely(region: Tuple[float, float, float, float]):
     """Convert a GeoFetch region (xmin, xmax, ymin, ymax) to a Shapely box.
     

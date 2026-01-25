@@ -247,6 +247,20 @@ class GeoFetchRegistry:
             'license': 'CC0 / Public Domain',
             'urls': {'home': 'https://www.ngdc.noaa.gov/iho/'}
         },
+
+        # NOAA Buoys
+        'buoys': {
+            'mod': 'geofetch.modules.buoys', 
+            'cls': 'Buoys', 
+            'category': 'Oceanography',
+            'desc': 'NOAA NDBC Buoy Data (Realtime & Historical)',
+            'agency': 'NOAA NDBC',
+            'tags': ['buoy', 'ocean', 'waves', 'wind', 'meteorology', 'noaa'],
+            'region': 'Global (NOAA network)',
+            'resolution': 'Point Data',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://www.ndbc.noaa.gov/'}
+        },
         
         # No Region Modules:
         
