@@ -374,17 +374,6 @@ class Fetch:
                     stream=True  # Always stream to support large files
                 )
                 
-                # req = requests.get(
-                #     self.url,
-                #     stream=True,
-                #     params=params,
-                #     json=json,
-                #     timeout=to_tuple,
-                #     verify=self.verify,
-                #     allow_redirects=self.allow_redirects,
-                #     headers=self.headers
-                # )
-                
                 ## Check status codes
                 if req.status_code == 504: # Gateway Timeout
                     time.sleep(2)
@@ -562,10 +551,6 @@ class Fetch:
                             
                         else:
                             pass
-                    # if check_size and total_size > 0:
-                    #     final_size = os.path.getsize(part_fn)
-                    #     if final_size != total_size:
-                    #         raise IOError(f"Incomplete download: {final_size}/{total_size} bytes")
                     
                     os.rename(part_fn, dst_fn)
                     return 0
