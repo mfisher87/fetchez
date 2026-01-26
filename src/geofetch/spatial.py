@@ -35,7 +35,8 @@ def region_help_msg():
   file.geojson             : Bounding box of vector file
     """
 
-def region_from_string_code(r_str: str) -> Optional[Tuple[float, float, float, float]]:
+
+def region_from_string(r_str: str) -> Optional[Tuple[float, float, float, float]]:
     """Parse a standard GMT-style region string (e.g. -R-105/-104/39/40)."""
     
     if not r_str: return None
@@ -55,7 +56,10 @@ def region_from_string_code(r_str: str) -> Optional[Tuple[float, float, float, f
 
     
 def region_from_list(r_list: List[float]) -> Optional[Tuple[float, float, float, float]]:
-    """Convert a list of 4 numbers to a bounding box tuple."""
+    """Convert a list of 4 numbers to a bounding box tuple.
+
+    The order should be [w, e, s, n]
+    """
     
     if len(r_list) < 4: return None
     try:
@@ -73,12 +77,11 @@ def region_from_geojson(fn: str) -> Optional[Tuple[float, float, float, float]]:
         with open(fn, 'r') as f:
             data = json.load(f)
         
-        # Normalize to list of features
         features = data.get('features', [data])
         
         min_x, min_y = float('inf'), float('inf')
         max_x, max_y = float('-inf'), float('-inf')
-        found_valid = False
+        valid = False
         
         for feat in features:
             geom = feat.get('geometry', feat)
@@ -90,11 +93,11 @@ def region_from_geojson(fn: str) -> Optional[Tuple[float, float, float, float]]:
                 min_y = min(min_y, b[1])
                 max_x = max(max_x, b[2])
                 max_y = max(max_y, b[3])
-                found_valid = True
+                valid = True
             else:
                 pass
 
-        if found_valid:
+        if valid:
             return (min_x, max_x, min_y, max_y)
             
     except Exception as e:
@@ -129,7 +132,7 @@ def region_from_place(query: str) -> Optional[Tuple[float, float, float, float]]
     return None
 
 
-def _is_coordinate_list(lst: List) -> bool:
+def _coordinate_list_p(lst: List) -> bool:
     """Check if a list looks like [x, x, y, y]."""
     
     if len(lst) != 4: 
@@ -141,9 +144,12 @@ def _is_coordinate_list(lst: List) -> bool:
     except (ValueError, TypeError):
         return False
 
-    
+_is_coordinate_list = _coordinate_list_p
+
+
 def parse_single_string(s: str) -> Optional[Tuple[float, float, float, float]]:
-    """Router for parsing a single string input."""
+    """Parse a single string (presumably a representation of a region) input."""
+    
     s_lower = s.lower()
     
     # File Paths
@@ -155,12 +161,11 @@ def parse_single_string(s: str) -> Optional[Tuple[float, float, float, float]]:
         return region_from_place(s)
         
     # Standard String (-R...)
-    return region_from_string_code(s)
+    return region_from_string(s)
 
 
 def parse_region(input_r: Union[str, List]) -> List[Tuple[float, float, float, float]]:
-    """
-    Main function to parse any region input into a list of (xmin, xmax, ymin, ymax) tuples.
+    """Main function to parse any region input into a list of (xmin, xmax, ymin, ymax) tuples.
     
     Returns:
         List[Tuple]: A list of bounding boxes. Returns empty list if parsing fails.
@@ -178,7 +183,7 @@ def parse_region(input_r: Union[str, List]) -> List[Tuple[float, float, float, f
     if isinstance(input_r, (list, tuple)):
         
         # Check if it is a single Coordinate List [x, x, y, y]
-        if _is_coordinate_list(input_r):
+        if _coordinate_list_p(input_r):
             r = region_from_list(input_r)
             if r: regions.append(r)
         
@@ -188,7 +193,7 @@ def parse_region(input_r: Union[str, List]) -> List[Tuple[float, float, float, f
                 if isinstance(item, str):
                     r = parse_single_string(item)
                     if r: regions.append(r)
-                elif isinstance(item, (list, tuple)) and _is_coordinate_list(item):
+                elif isinstance(item, (list, tuple)) and _coordinate_list_p(item):
                     r = region_from_list(item)
                     if r: regions.append(r)
 
@@ -236,6 +241,8 @@ def region_valid_p(region: Optional[Tuple[float, float, float, float]], check_xy
             
     return True
 
+region_is_valid = region_valid_p
+
 
 def buffer_region(bbox: Tuple, pct: float = 5) -> Tuple[float, float, float, float]:
     """Apply a percentage buffer to a bounding box."""
@@ -254,7 +261,7 @@ def buffer_region(bbox: Tuple, pct: float = 5) -> Tuple[float, float, float, flo
 
 
 def region_center(region: Tuple[float, float, float, float]):
-    """Calculate the center of a region"""
+    """Calculate the center of a region."""
 
     w, e, s, n = region
     center_lon = (w + e) / 2
@@ -262,12 +269,12 @@ def region_center(region: Tuple[float, float, float, float]):
 
     return center_lon, center_lat
 
+
 def region_to_shapely(region: Tuple[float, float, float, float]):
-    """Convert a GeoFetch region (xmin, xmax, ymin, ymax) to a Shapely box.
+    """Convert a geofetch region (xmin, xmax, ymin, ymax) to a shapely box.
     
-    Handles the coordinate order mismatch:
-    GeoFetch: (West, East, South, North)
-    Shapely:  (minx, miny, maxx, maxy)
+    geofetch regions are like GMT: (west, east, south, north) while
+    shapely regions are not: (minx, miny, maxx, maxy)
     """
     
     if not region or not HAS_SHAPELY:
@@ -276,8 +283,9 @@ def region_to_shapely(region: Tuple[float, float, float, float]):
     west, east, south, north = region
     return box(west, south, east, north)
 
+
 def region_to_wkt(region: Tuple[float, float, float, float]):
-    """Convert a GeoFetch region (xmin, xmax, ymin, ymax) to WKT"""
+    """Convert a geofetch region (xmin, xmax, ymin, ymax) to WKT (via shapely)"""
 
     polygon = region_to_shapely(region)
     return polygon.wkt
