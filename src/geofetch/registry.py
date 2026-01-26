@@ -108,6 +108,7 @@ class GeoFetchRegistry:
             'aliases': ['3dep_lidar']
         },
 
+        # USGS Checkpoints
         '3dep_cp': {
             'mod': 'geofetch.modules.checkpoints_3dep', 
             'cls': 'CheckPoints3DEP', 
@@ -124,6 +125,20 @@ class GeoFetchRegistry:
             }
         },
 
+        # USGS Waterservices
+        'waterservices': {
+            'mod': 'geofetch.modules.waterservices', 
+            'cls': 'WaterServices', 
+            'category': 'Hydrography',
+            'desc': 'USGS Water Services (Streamflow/River Data)',
+            'agency': 'USGS',
+            'tags': ['water', 'streamflow', 'river', 'usgs', 'hydrology', 'realtime'],
+            'region': 'USA',
+            'resolution': 'Point Data',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://waterservices.usgs.gov/'}
+        },
+        
         # NASA EarthData
         'earthdata': {
             'mod': 'geofetch.modules.earthdata', 

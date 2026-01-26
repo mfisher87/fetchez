@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - geofetch.core fetch_req now supports 'method' arg
 - geofetch.spatial 'region_center' method
 - buouy module
+- gmrt module
+- geofetch.spatial 'region_to_bbox' method
+- waterservices module
 
 ### Changed
 - In geofetch.core, allow for transparent gzip (local size is larger than remote size)
