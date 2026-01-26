@@ -166,8 +166,8 @@ GeoFetch supports over 40 modules categorized by data type. Run ```geofetch --mo
 
 ## 🛠️ Contributing
 
-We welcome contributions! Please see CONTRIBUTING.md for details on how to register new modules with our enhanced metadata schema.
+We welcome contributions! Please see [CONTRIBUTING.md](/CONTRIBUTING.md) for details on how to register new modules with our enhanced metadata schema.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.Copyright (c) 2010-2026 Regents of the University of Colorado
+This project is licensed under the MIT License - see the [LICENSE](/LICENSE) file for details.Copyright (c) 2010-2026 Regents of the University of Colorado
