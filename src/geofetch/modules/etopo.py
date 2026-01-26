@@ -181,7 +181,7 @@ class ETOPO(core.FetchModule):
                     count += 1
                     
                 except (ValueError, IndexError) as e:
-                     logger.debug(f"Failed to parse ETOPO filename {filename}: {e}")
+                    logger.debug(f"Failed to parse ETOPO filename {filename}: {e}")
                     continue
 
         logger.info(f"Indexed {count} ETOPO 15s datasets.")
