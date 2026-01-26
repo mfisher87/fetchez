@@ -1,6 +1,6 @@
-theme: jekyll-theme-cayman
+theme: jekyll-theme-primer
 title: GeoFetch
-description: The Generic Geospatial Data Acquisition Engine
+description: The Generic Geospatial Data Acquisition and Registry Engine
 show_downloads: true
 google_analytics:
 github:
