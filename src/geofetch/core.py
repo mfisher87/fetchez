@@ -604,14 +604,6 @@ def fetch_queue(q: queue.Queue, stop_event: threading.Event, c: bool = True):
 
     while not stop_event.is_set():
         url, local_path, data_type, module, retries, results_list = q.get()
-        # fetch_args = q.get()
-        # url = fetch_args[0]
-        # local_path = fetch_args[1]
-        # data_type = fetch_args[2]
-        # module = fetch_args[3]
-        # retries = fetch_args[4]
-        # results_list = fetch_args[5]
-
         if stop_event.is_set():
             q.task_done()
             continue
@@ -719,7 +711,7 @@ class fetch_results(threading.Thread):
         self.stop_event.set()
 
 
-## TESTING
+# --- TESTING ---
 def run_fetches(modules, threads=3):    
     with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
         # Submit all download tasks
@@ -735,6 +727,12 @@ def run_fetches(modules, threads=3):
         
 # =============================================================================
 # Fetch Module (Base & Default/Test Implementations)
+#
+# To create a sub-module, inherit from this `FetchModule` here.
+# Then redefine `run` (and do whatever else). `run` should populate
+# self.results, which is used for fetching. `self.results` should have
+# at least `url`, `dst_fn` and `data_type` set for each fetch result,
+# though any relevant info can fill the rest of it for whatever purpose...
 # =============================================================================
 class FetchModule:
     """Base class for all fetch modules."""
@@ -836,9 +834,9 @@ class FetchModule:
         entry.update(kwargs)
         self.results.append(entry)             
 
+        
 # Simple Fetch Module to fetch a url.
 # It will just add that url to `results`.
-        
 class HttpDataset(FetchModule):
     """Fetch an http file directly."""
     
