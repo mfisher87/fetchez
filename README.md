@@ -20,7 +20,7 @@
 
 **GeoFetch** is a lightweight, modular Python library and command-line tool designed to discover and download geospatial data from a wide variety of public repositories.
 
-Originally part of the [CUDEM](https://github.com/ciresdem/cudem) project, GeoFetch is now a standalone tool capable of retrieving Bathymetry, Topography, Imagery, and Oceanographic data from sources like NOAA, USGS, NASA, and the European Space Agency.
+Originally part of the [CUDEM](https://github.com/ciresdem/cudem) project, GeoFetch is now a standalone tool capable of retrieving Bathymetry, Topography, Imagery, and Oceanographic data (and more!) from sources like NOAA, USGS, NASA, and the European Space Agency.
 
 ---
 
@@ -64,15 +64,17 @@ geofetch -R <region> <module> [options]
 geofetch -R -105.5/-104.5/39.5/40.5 srtm_plus
 ```
 
- * Discover Data SourcesBash# View detailed metadata card for a module
+ * Discover Data Sources
 
 ```bash
+# View detailed metadata card for a module
 geofetch --info gmrt
 ```
 
- * Fetch Data Using a Place NameBash# Automatically resolves "Boulder, CO" to a bounding box
+ * Fetch Data Using a Place Name
 
 ```bash
+# Automatically resolves "Boulder, CO" to a bounding box region
 geofetch -R loc:"Boulder, CO" copernicus --datatype=1
 ```
 
@@ -166,8 +168,10 @@ GeoFetch supports over 40 modules categorized by data type. Run ```geofetch --mo
 
 ## 🛠️ Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](/CONTRIBUTING.md) for details on how to register new modules with our enhanced metadata schema.
+We welcome contributions! Please see [CONTRIBUTING.md](/CONTRIBUTING.md) for details on how to register new modules with our metadata schema.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](/LICENSE) file for details.Copyright (c) 2010-2026 Regents of the University of Colorado
+This project is licensed under the MIT License - see the [LICENSE](/LICENSE) file for details.
+
+Copyright (c) 2010-2026 Regents of the University of Colorado
