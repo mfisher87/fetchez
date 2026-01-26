@@ -74,6 +74,20 @@ class GeoFetchRegistry:
                 'docs': 'https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model'
             }
         },
+
+        # NOAA ETOPO-2022
+        'etopo': {
+            'mod': 'geofetch.modules.etopo', 
+            'cls': 'ETOPO', 
+            'category': 'Topography',
+            'desc': 'ETOPO 2022 Global Relief Model (15s, 30s, 60s)',
+            'agency': 'NOAA NCEI',
+            'tags': ['topography', 'bathymetry', 'elevation', 'global', 'etopo', 'relief'],
+            'region': 'Global',
+            'resolution': '15s (~450m) to 60s (~1.8km)',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://www.ncei.noaa.gov/products/etopo-global-relief-model'}
+        },
         
         # The National Map (TNM) / USGS and Shortcuts (ned/3dep/etc)
         'tnm': {
