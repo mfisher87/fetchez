@@ -306,6 +306,20 @@ class GeoFetchRegistry:
             'license': 'Public Domain',
             'urls': {'home': 'https://www.ndbc.noaa.gov/'}
         },
+
+        # CHS NONNA from Canada
+        'chs': {
+            'mod': 'geofetch.modules.chs', 
+            'cls': 'CHS', 
+            'category': 'Bathymetry',
+            'desc': 'Canadian Hydrographic Service NONNA (10m & 100m)',
+            'agency': 'CHS',
+            'tags': ['bathymetry', 'canada', 'chs', 'nonna', 'wcs', 'topography'],
+            'region': 'Canada',
+            'resolution': '10m or 100m',
+            'license': 'Open Government Licence - Canada',
+            'urls': {'home': 'https://open.canada.ca/data/en/dataset/d3881c4c-650d-4070-bf9b-1e00aabf0a1d'}
+        },
         
         # The following modules don't need a `region`,
         # they populate `FetchModule.results` in some other way.

@@ -71,8 +71,7 @@ NETCDF_BASE_URLS = {
     update="Force update of the local index (FRED)"
 )
 class ETOPO(core.FetchModule):
-    """
-    Fetch ETOPO 2022 data.
+    """Fetch ETOPO 2022 data.
     
     Automatically handles fallback from 'bed' to 'surface' for non-ice regions.
     """
