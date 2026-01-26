@@ -9,7 +9,7 @@ Whether you're fixing a bug, adding a new data module, or improving documentatio
 1.  **Fork the Repository:** Click the "Fork" button on the top right of the GitHub page.
 2.  **Clone your Fork:**
     ```bash
-    git clone [https://github.com/YOUR_USERNAME/geofetch.git](https://github.com/YOUR_USERNAME/geofetch.git)
+    git clone https://github.com/YOUR_USERNAME/geofetch.git
     cd geofetch
     ```
 3.  **Create a Virtual Environment:**
@@ -28,7 +28,7 @@ If you find a bug, please create a new issue on GitHub. Include:
 * The exact command you ran.
 * The error message / traceback.
 * Your operating system and Python version.
-* (If possible) The specific region (`-R`) that caused the failure.
+* (If possible) The specific region (`-R`) and module that caused the failure.
 
 ## 🌎 Adding a New Fetch Module
 
