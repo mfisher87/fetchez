@@ -111,7 +111,7 @@ Adding a module is easy:
 
 1. Create a Class: Inherit from geofetch.core.FetchModule.
 
-2. Implement run(): Define how to translate a region into a URLs suitable to download.
+2. Implement run(): Define how to translate a region into URLs suitable to download.
 
 3. Register It: Add your metadata (Agency, Resolution, License) to registry.py.
 

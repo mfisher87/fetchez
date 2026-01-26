@@ -52,8 +52,8 @@ The most common contribution is adding support for a new data source.
 
         def run(self):
             # 1. Construct the download URL based on self.region
-            # 2. Use core.Fetch(url).fetch_file(...) to download it
-            # 3. Add successful downloads to self.results
+            # 2. Use core.Fetch(url).fetch_req(...) to query the API for download urls
+            # 3. Add successful download urls to the results with `self.add_entry_to_results'
             pass
     ```
 
