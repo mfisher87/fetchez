@@ -289,3 +289,10 @@ def region_to_wkt(region: Tuple[float, float, float, float]):
 
     polygon = region_to_shapely(region)
     return polygon.wkt
+
+
+def region_to_bbox(region: Tuple[float, float, float, float]):
+    """Convert a geofetch region to a `bbox`"""
+
+    w, e, s, n = region
+    return (w, s, e, n)
