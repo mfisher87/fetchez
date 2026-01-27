@@ -127,7 +127,7 @@ Read the [Contribution Guide](https://github.com/ciresdem/fetchez/blob/main/CONT
 ## ⚠️ Disclaimer on Data Persistence
 "The map is not the territory... and the server is not permanent."
 
-Fetchez is a conduit, not a reservoir. We provide the tools to locate and download data from authoritative public repositories, but we do not host the data ourselves. The internet is a shifting landscape.
+Fetchez is a conduit, not a reservoir. We provide the tools to locate and download data from authoritative public repositories, but we do not host the data ourselves.
 
 Links Rot: Government agencies reorganize websites, migrate APIs (e.g., WCS 1.0 to 2.0), or decommission servers without notice. A module that fetches perfectly today may encounter a 404 tomorrow.
 
