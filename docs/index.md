@@ -89,6 +89,22 @@ We support a growing federation of data sources:
 | Reference | osm (OpenStreetMap), vdatum |
 | Generic | http (Direct URL), earthdata (NASA) |
 
+## 🐄 Plugins & Extensions
+
+Need to fetch data from a specialized local server, a private S3 bucket, or a niche API? You don't need to fork the repo!
+
+Fetchez supports **user-defined plugins**. Simply drop a Python script into your configuration folder, and it will be automatically registered as a command.
+
+**Quick Start:**
+
+1.  **Create the folder:** `mkdir -p ~/.fetchez/plugins`
+2.  **Add your script:** Drop a Fetchez supported Python file (my_data.py) inheriting from `FetchModule` into that folder.
+3.  **Run it:** `fetchez -m my_data`
+
+Your plugin instantly gains all of Fetchez's powers: smart region parsing, multi-threaded downloading, and retry logic.
+
+See the [Contribution Guide](https://github.com/ciresdem/fetchez/blob/main/CONTRIBUTING.md) for a full code example.
+
 ## 🤝 Contribute new Fetchez Modules!
 
 The power of Fetchez lies in its registry. The more modules we have, the more powerful the tool becomes for the entire geospatial community.
