@@ -61,7 +61,7 @@ class CheckPoints3DEP(core.FetchModule):
              print(f"Searching in region: {self.region}"
 
     	# This is where you'd normally hit an API, or parse some
-	# data, etc.
+        # data, etc.
 	
         self.add_entry_to_results(
             url=f'{checkpoints_url}{checkpoints_link}',
