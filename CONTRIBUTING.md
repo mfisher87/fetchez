@@ -100,7 +100,7 @@ fetchez university_data --semester s2024
 ```
 
 #### Promoting a Plugin
-Did you build a plugin that would be useful for the wider community? We'd love to have it!
+Did you build a plugin that would be useful for the wider community? We'd love to incorporate it!
 
 Submit a Pull Request adding your file to geofetch/modules/.
 
