@@ -33,7 +33,7 @@ Originally part of the [CUDEM](https://github.com/ciresdem/cudem) project, Fetch
 Download and install git (If you have not already): [git installation](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
 ```bash
-pip install git+[https://github.com/ciresdem/fetchez.git#egg=fetchez](https://github.com/ciresdem/fetchez.git#egg=fetchez)
+pip install git+https://github.com/ciresdem/fetchez.git#egg=fetchez
 
 ```
 
