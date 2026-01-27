@@ -1,26 +1,24 @@
-# GeoFetch
+# Fetchez
 
-<pre style="background-color: #FFFFFF;">
-       _..._
-     .'     '.      ___
-    /    .-""-\   .'_  '\
-   |   /'  _   \ / / \   \    
-   |  |   (_)   |  |  \  |    [ : G E O F E T C H : ]
-   \   \     /  \   \ /  / 
-    \   '.__.'   '.__.' /
-     '.       _..._   .'
-       '-----'     '-'
+<pre style="background-color: #FFFFFF; font-family: monospace;">
+        (___)
+        (o o)____/   
+         @@      \   
+          \ ____, /  [ : F E T C H E Z : ] 
+          //    //  
+         ^^    ^^   
+  "Fetchez la donnée!"
 </pre>
 
 **The Generic Geospatial Data Acquisition and Registry Engine**
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/ciresdem/geofetch)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/ciresdem/fetchez)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.8+-yellow.svg)](https://www.python.org/)
 
-**GeoFetch** is a lightweight, modular Python library and command-line tool designed to discover and download geospatial data from a wide variety of public repositories.
+**Fetchez** is a lightweight, modular Python library and command-line tool designed to discover and retrieve geospatial data from a wide variety of public repositories.
 
-Originally part of the [CUDEM](https://github.com/ciresdem/cudem) project, GeoFetch is now a standalone tool capable of retrieving Bathymetry, Topography, Imagery, and Oceanographic data (and more!) from sources like NOAA, USGS, NASA, and the European Space Agency.
+Originally part of the [CUDEM](https://github.com/ciresdem/cudem) project, Fetchez is now a standalone tool capable of retrieving Bathymetry, Topography, Imagery, and Oceanographic data (and more!) from sources like NOAA, USGS, NASA, and the European Space Agency.
 
 ---
 
@@ -28,14 +26,21 @@ Originally part of the [CUDEM](https://github.com/ciresdem/cudem) project, GeoFe
 
 * One command to fetch data from 40+ different sources (SRTM, GMRT, NOAA NOS, USGS 3DEP, Copernicus, etc.).
 * Built-in metadata registry allows you to search for datasets by tag, agency, resolution, or license.
-* Built-in "Fetches Remote Elevation Datalist" (FRED) automatically indexes remote files for spatial querying without hitting APIs repeatedly.
+* Built-in "Fetchez Remote Elevation Datalist" (FRED) automatically indexes remote files for spatial querying without hitting APIs repeatedly.
 * Built-in download engine with automatic retries, timeout handling, and byte-range support for resuming interrupted downloads.
 * Minimal dependencies (`requests`, `tqdm`, `lxml`). Optional `shapely` support for precise spatial filtering.
+* Supports user-defined plugins via `~/.fetchez/plugins/`.
 
 ---
 
 
 ## 📦 Installation
+
+**From PyPI:**
+
+```bash
+pip install fetchez
+```
 
 **From Source:**
 
@@ -47,12 +52,12 @@ pip install .
 
 ## 💻 CLI Usage
 
-The primary command is geofetch (or gfetch).
+The primary command is fetchez.
 
 ### Basic Syntax
 
 ```bash
-geofetch -R <region> <module> [options]
+fetchez -R <region> <module> [options]
 ```
 
 ### Examples
@@ -61,27 +66,27 @@ geofetch -R <region> <module> [options]
 
 ```bash
 # Region Format: West/East/South/North
-geofetch -R -105.5/-104.5/39.5/40.5 srtm_plus
+fetchez -R -105.5/-104.5/39.5/40.5 srtm_plus
 ```
 
  * Discover Data Sources
 
 ```bash
 # View detailed metadata card for a module
-geofetch --info gmrt
+fetchez --info gmrt
 ```
 
  * Fetch Data Using a Place Name
 
 ```bash
 # Automatically resolves "Boulder, CO" to a bounding box region
-geofetch -R loc:"Boulder, CO" copernicus --datatype=1
+fetchez -R loc:"Boulder, CO" copernicus --datatype=1
 ```
 
  * List Available Modules
 
 ```bash
-geofetch --modules
+fetchez --modules
 ```
 
 ### Common Flags
@@ -96,19 +101,19 @@ geofetch --modules
 
 ## 🐍 Python API
 
-GeoFetch is designed to be easily integrated into Python workflows.
+Fetchez is designed to be easily integrated into Python workflows.
 
 ### Simple Fetching
 
 ```python
-import geofetch
+import fetchez
 
 # Define a region (West, East, South, North)
 bbox = (-105.5, -104.5, 39.5, 40.5)
 
 # Initialize a specific fetcher module
 # Use the registry to load modules dynamically
-SRTM = geofetch.registry.GeoFetchRegistry.load_module('srtm_plus')
+SRTM = fetchez.registry.GeoFetchRegistry.load_module('srtm_plus')
 
 # Configure and Run
 fetcher = SRTM(src_region=bbox, verbose=True)
@@ -125,14 +130,14 @@ for result in fetcher.results:
 Query the registry to find datasets that match your criteria programmatically.
 
 ```python
-from geofetch.registry import GeoFetchRegistry
+from fetchez.registry import FetchezRegistry
 
 # Search for global bathymetry datasets
-matches = GeoFetchRegistry.search_modules('global bathymetry')
+matches = FetchezRegistry.search_modules('global bathymetry')
 print(f"Found modules: {matches}")
 
 # Get details for a specific module
-meta = GeoFetchRegistry.get_info('copernicus')
+meta = FetchezRegistry.get_info('copernicus')
 print(f"Resolution: {meta.get('resolution')}")
 print(f"License: {meta.get('license')}")
 ```
@@ -140,7 +145,7 @@ print(f"License: {meta.get('license')}")
 For modules that rely on file lists (like Copernicus or NCEI), you can interact directly with the local index.
  
 ```python
-from geofetch import fred
+from fetchez import fred
 
 # Load the local index
 index = fred.FRED(name='copernicus')
@@ -156,7 +161,7 @@ print(f"Found {len(results)} datasets.")
 
 ## 🗺️ Supported Data Sources
 
-GeoFetch supports over 40 modules categorized by data type. Run ```geofetch --modules``` to see the full list.
+Fetchez supports over 40 modules categorized by data type. Run ```fetchez --modules``` to see the full list.
 
 | Category | Example Modules |
 |----|----|

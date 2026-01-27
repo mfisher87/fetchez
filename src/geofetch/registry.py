@@ -36,8 +36,9 @@ logger = logging.getLogger(__name__)
 # =============================================================================
 class GeoFetchRegistry:
     """GeoFetch Module Registry with rich metadata for discovery."""
-    
+            
     _modules = {
+        
         # Generic https module to send an argument to FetchModule.results
         'https': {'mod': 'geofetch.core', 'cls': 'HttpDataset', 'category': 'Generic'},
         
@@ -369,7 +370,6 @@ class GeoFetchRegistry:
             }
         },        
     }
-
     
     @classmethod
     def get_info(cls, mod_key: str) -> dict:
@@ -407,10 +407,20 @@ class GeoFetchRegistry:
             
         return entry
 
-    
+
     @classmethod
-    def load_module(cls, mod_key: str):
-        """Import and return the class using `importlib`."""
+    def load_module(cls, mod_key):
+        """Import and return the (module or user-plugin) class using `importlib`."""    
+            
+        meta = cls._modules[mod_key]
+        
+        # User Plugin
+        if '_class_obj' in meta:
+            return meta['_class_obj']
+            
+        # Standard Module
+        if mod_key not in cls._modules:
+            return None
         
         info = cls.get_info(mod_key)
         if not info:
@@ -423,7 +433,60 @@ class GeoFetchRegistry:
         except (ImportError, AttributeError) as e:
             logger.error(f"Failed to load {mod_key}: {e}")
             return None
+        
+    @classmethod
+    def load_user_plugins(cls):
+        """Scan ~/.geofetch/plugins/ for external modules and register them."""
 
+        import os, sys
+        import inspect
+        import importlib.util
+        from . import core
+        
+        home_dir = os.path.expanduser("~")
+        plugin_dir = os.path.join(home_dir, ".geofetch", "plugins")
+        
+        if not os.path.exists(plugin_dir):
+            return
+
+        # Add the plugin_dir to the system path for imports
+        sys.path.insert(0, plugin_dir)
+        
+        for filename in os.listdir(plugin_dir):
+            if filename.endswith(".py") and not filename.startswith("_"):
+                filepath = os.path.join(plugin_dir, filename)
+                module_name = f"user_plugin_{filename[:-3]}"
+                
+                try:
+                    spec = importlib.util.spec_from_file_location(module_name, filepath)
+                    if spec and spec.loader:
+                        user_mod = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(user_mod)
+                        
+                        for name, obj in inspect.getmembers(user_mod):
+                            if inspect.isclass(obj) and issubclass(obj, core.FetchModule):
+                                if obj is core.FetchModule: continue
+                                
+                                # Check for @cli_opts metadata (optional but recommended)
+                                # or defaults
+                                mod_key = getattr(obj, 'name', name.lower())
+                                logger.info(f"Loaded user plugin: {mod_key}")
+                                
+                                cls._modules[mod_key] = {
+                                    'mod': f'user_plugin_{filename[:-3]}',
+                                    'cls': name,
+                                    'category': 'User Plugin',
+                                    'desc': getattr(obj, '__doc__', 'User defined module').strip().split('\n')[0],
+                                    'agency': 'External',
+                                    '_class_obj': obj 
+                                }
+                                
+                except Exception as e:
+                    logger.warning(f"Failed to load plugin {filename}: {e}")
+
+        # Remove the plugin_dir from the system path
+        sys.path.pop(0)
+        
         
     @classmethod
     def search_modules(cls, query: str) -> list:
@@ -452,3 +515,6 @@ class GeoFetchRegistry:
                 matches.append(key)
                 
         return sorted(matches)
+
+
+GeoFetchRegistry.load_user_plugins()

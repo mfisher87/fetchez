@@ -230,6 +230,8 @@ def geofetch_cli():
     """Run geofetch from command-line using argparse."""
 
     _usage = f"%(prog)s [-R REGION] [-H THREADS] [-A ATTEMPTS] [-l] [-z] [-q] [-v] [-m] MODULE [MODULE-OPTS]..." 
+
+    #registry.GeoFetchRegistry.load_user_plugins()
     
     parser = argparse.ArgumentParser(
         description=f"{utils.CYAN}%(prog)s{utils.RESET} ({__version__}) :: Fetch and process remote elevation data",
