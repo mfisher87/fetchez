@@ -61,8 +61,8 @@ class MyUni(core.FetchModule):
     def run(self):
         # Use self.region if spatial filtering is needed
         if self.region:
-             print(f"Searching in region: {self.region}")
-
+             print(f"Searching in region: {self.region}"
+	     
 	# (This is where you'd usually hit an API or parse a directory)	
         url = f"https://data.uni.edu/{self.semester}/files.zip"
         self.add_entry_to_results(url, "data.zip", "zip")
