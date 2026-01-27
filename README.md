@@ -45,8 +45,8 @@ pip install fetchez
 **From Source:**
 
 ```bash
-git clone https://github.com/ciresdem/geofetch.git
-cd geofetch
+git clone https://github.com/ciresdem/fetchez.git
+cd fetchez
 pip install .
 ```
 
@@ -113,7 +113,7 @@ bbox = (-105.5, -104.5, 39.5, 40.5)
 
 # Initialize a specific fetcher module
 # Use the registry to load modules dynamically
-SRTM = fetchez.registry.GeoFetchRegistry.load_module('srtm_plus')
+SRTM = fetchez.registry.FetchezRegistry.load_module('srtm_plus')
 
 # Configure and Run
 fetcher = SRTM(src_region=bbox, verbose=True)
