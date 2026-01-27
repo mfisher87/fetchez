@@ -192,7 +192,7 @@ Data Evolves: Source datasets are frequently updated, reprocessed, or removed by
 
 Service Availability: Remote servers (like NOAA NCEI, USGS, or Copernicus) may experience downtime, throttling, or rate limits that are entirely outside our control.
 
-We strive to keep our modules robust and our index fresh. If you encounter a broken fetch or a changed endpoint, please open an issue—it helps the whole community keep up with the changes!
+We strive to keep our modules robust and our index fresh. If you encounter a broken fetch or a changed endpoint, please open an issue. This helps the whole community keep up with the changes!
 
 ## 📄 License
 
