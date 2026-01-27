@@ -95,6 +95,9 @@ Once you save the file, simply run:
 # Check if it loaded
 fetchez --modules | grep university_data
 
+# or
+fetchez --search plugin
+
 # Run it
 fetchez university_data --semester s2024
 ```
