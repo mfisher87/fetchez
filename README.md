@@ -84,7 +84,7 @@ fetchez --modules
 
 ### Common Flags
 
-```
+``` 
 -R, --region: Set the area of interest (Bounding Box, Place Name, or File).
 -l, --list: Print the URLs found but do not download them.
 -H, --threads: Number of parallel download threads (default: 1).
@@ -126,7 +126,7 @@ Query the registry to find datasets that match your criteria programmatically.
 from fetchez.registry import FetchezRegistry
 
 # Search for global bathymetry datasets
-matches = FetchezRegistry.search_modules('global bathymetry')
+matches = FetchezRegistry.search_modules('bathymetry')
 print(f"Found modules: {matches}")
 
 # Get details for a specific module
