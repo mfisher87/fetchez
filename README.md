@@ -1,7 +1,7 @@
 # Fetchez
 
 <pre>
-[ F E T C H E Z ]
+🐄🌍 [ F E T C H E Z ]
 </pre>
 **The Generic Geospatial Data Acquisition and Registry Engine**
 
