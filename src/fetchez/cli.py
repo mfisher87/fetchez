@@ -243,7 +243,7 @@ def fetchez_cli():
     registry.FetchezRegistry.load_user_plugins()
 
     parser = argparse.ArgumentParser(
-        description=f"{utils.CYAN}%(prog)s{utils.RESET} ({__version__}) :: Fetch and process remote elevation data",
+        description=f"{utils.CYAN}%(prog)s{utils.RESET} ({__version__}) :: Discover and Fetch remote geospatial data",
         formatter_class=argparse.RawTextHelpFormatter,
         add_help=False,
         usage=_usage,
