@@ -171,7 +171,7 @@ Need to fetch data from a specialized local server, a private S3 bucket, or a ni
 **Fetchez** supports user-defined plugins. Drop a Fetchez compatible Python script into your configuration folder, and it will be automatically registered as a command.
 
 **Quick Start:**
-1.  Create the folder: `mkdir -p ~/.fetchez/plugins`
+1.  Create the folder: `mkdir ~/.fetchez/plugins`
 2.  Drop a python script there (e.g., `my_data.py`).
 3.  Run it: `fetchez my_data`
 
