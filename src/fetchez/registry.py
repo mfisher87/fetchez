@@ -315,6 +315,58 @@ class FetchezRegistry:
             'license': 'Public Domain',
             'urls': {'home': 'https://nauticalcharts.noaa.gov/data/bluetopo.html'}
         },
+
+        'margrav': {
+            'mod': 'fetchez.modules.margrav', 
+            'cls': 'MarGrav', 
+            'category': 'Bathymetry',
+            'desc': 'Marine Gravity (Scripps/UCSD)',
+            'agency': 'SIO',
+            'tags': ['gravity', 'bathymetry', 'scripps', 'altimetry'],
+            'region': 'Global / Marine',
+            'resolution': '1-minute',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://topex.ucsd.edu/WWW_html/mar_grav.html'}
+        },
+
+        'srtm_plus': {
+            'mod': 'fetchez.modules.srtmplus', 
+            'cls': 'SRTMPlus', 
+            'category': 'Topography',
+            'desc': 'SRTM15+ Global Bathymetry/Topography (Scripps/UCSD)',
+            'agency': 'SIO / UCSD',
+            'tags': ['srtm', 'bathymetry', 'topography', 'global', 'scripps'],
+            'region': 'Global',
+            'resolution': '15 arc-seconds (~500m)',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://topex.ucsd.edu/WWW_html/srtm15_plus.html'}
+        },
+        
+        'synbath': {
+            'mod': 'fetchez.modules.synbath', 
+            'cls': 'SynBath', 
+            'category': 'Bathymetry',
+            'desc': 'UCSD SynBath Global Synthetic Bathymetry',
+            'agency': 'SIO / UCSD',
+            'tags': ['synbath', 'bathymetry', 'global', 'scripps', 'synthetic'],
+            'region': 'Global',
+            'resolution': '30 arc-seconds (~1km)',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://topex.ucsd.edu/pub/synbath/'}
+        },
+
+        'vgg': {
+            'mod': 'fetchez.modules.vgg', 
+            'cls': 'VGG', 
+            'category': 'Bathymetry',
+            'desc': 'Vertical Gravity Gradient (VGG)',
+            'agency': 'SIO / UCSD',
+            'tags': ['vgg', 'gravity', 'curvature', 'seamounts', 'scripps'],
+            'region': 'Global',
+            'resolution': '1-minute',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://topex.ucsd.edu/WWW_html/mar_grav.html'}
+        },
         
         # Nautical Charts (NOAA)
         'charts': {
