@@ -89,6 +89,19 @@ class FetchezRegistry:
             }
         },
 
+        'fabdem': {
+            'mod': 'fetchez.modules.fabdem', 
+            'cls': 'FABDEM', 
+            'category': 'Topography',
+            'desc': 'FABDEM (Forest And Buildings removed Copernicus DEM)',
+            'agency': 'University of Bristol',
+            'tags': ['fabdem', 'dem', 'dtm', 'copernicus', 'global', '30m'],
+            'region': 'Global',
+            'resolution': '1 arc-second (~30m)',
+            'license': 'CC-BY-NC-SA 4.0',
+            'urls': {'home': 'https://data.bris.ac.uk/data/dataset/s5hqmjcdj8yo2ibzi9b4ew3sn'}
+        },
+        
         # Digital Coast (DAV) and shortcuts (slr, cudem, coned)
         'dav': {
             'mod': 'fetchez.modules.dav', 
@@ -329,6 +342,32 @@ class FetchezRegistry:
             'urls': {'home': 'https://nauticalcharts.noaa.gov/data/bluetopo.html'}
         },
 
+        'ehydro': {
+            'mod': 'fetchez.modules.ehydro', 
+            'cls': 'eHydro', 
+            'category': 'Bathymetry',
+            'desc': 'USACE eHydro Navigation Surveys',
+            'agency': 'USACE',
+            'tags': ['ehydro', 'usace', 'bathymetry', 'navigation', 'channels', 'army'],
+            'region': 'USA / Coastal',
+            'resolution': 'Various (High-Res)',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://navigation.usace.army.mil/Survey/Hydro'}
+        },
+        
+        'mgds': {
+            'mod': 'fetchez.modules.mgds', 
+            'cls': 'MGDS', 
+            'category': 'Bathymetry',
+            'desc': 'Marine Geoscience Data System (MGDS)',
+            'agency': 'IEDA / NSF',
+            'tags': ['mgds', 'bathymetry', 'marine', 'swath', 'geophysics'],
+            'region': 'Global / Marine',
+            'resolution': 'Various',
+            'license': 'Public / Academic',
+            'urls': {'home': 'https://www.marine-geo.org/'}
+        },
+        
         'margrav': {
             'mod': 'fetchez.modules.margrav', 
             'cls': 'MarGrav', 
@@ -490,6 +529,32 @@ class FetchezRegistry:
             'urls': {'home': 'https://portal.emodnet-bathymetry.eu/'}
         },
 
+        'gedtm30': {
+            'mod': 'fetchez.modules.gedtm30', 
+            'cls': 'GEDTM30', 
+            'category': 'Topography',
+            'desc': 'Global 1-Arc-Second DTM (OpenLandMap)',
+            'agency': 'OpenLandMap',
+            'tags': ['gedtm30', 'dtm', 'global', '30m', 'land'],
+            'region': 'Global',
+            'resolution': '1 arc-second (~30m)',
+            'license': 'CC-BY / Public',
+            'urls': {'home': 'https://github.com/openlandmap/GEDTM30'}
+        },
+
+        'nasadem': {
+            'mod': 'fetchez.modules.nasadem', 
+            'cls': 'NASADEM', 
+            'category': 'Topography',
+            'desc': 'NASADEM (Modernized SRTM)',
+            'agency': 'NASA',
+            'tags': ['nasadem', 'srtm', 'elevation', 'global', '30m'],
+            'region': 'Global (60N to 56S)',
+            'resolution': '1 arc-second (~30m)',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://earthdata.nasa.gov/'}
+        },
+        
         'arcticdem': {
             'mod': 'fetchez.modules.arcticdem', 
             'cls': 'ArcticDEM', 

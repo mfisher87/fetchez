@@ -772,8 +772,8 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3):
                     pbar.update(1)
                     
     except KeyboardInterrupt:
-        STOP_EVENT.set()
-        logge.warning("\n🛑 Stopping downloads... (waiting for workers to exit)")        
+        #STOP_EVENT.set()
+        #tqdm.write("\n🛑 Stopping downloads... (waiting for workers to exit)")        
         #executor.shutdown(wait=False, cancel_futures=True)
         
         raise
