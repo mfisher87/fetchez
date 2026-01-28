@@ -684,6 +684,19 @@ class FetchezRegistry:
             'license': 'CC-BY 4.0',
             'urls': {'home': 'https://figshare.com/articles/dataset/GLOBathy_Bathymetric_Data/13353392'}
         },
+
+        'usiei': {
+            'mod': 'fetchez.modules.usiei', 
+            'cls': 'USIEI', 
+            'category': 'Reference',
+            'desc': 'US Interagency Elevation Inventory (Metadata Only)',
+            'agency': 'NOAA / USGS / FEMA',
+            'tags': ['inventory', 'metadata', 'usiei', 'lidar', 'footprints'],
+            'region': 'USA',
+            'resolution': 'Vector Footprints',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://coast.noaa.gov/inventory/'}
+        },
         
         # Proj CDN
         'proj': {
