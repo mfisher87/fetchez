@@ -171,7 +171,7 @@ If you try to run a module and it complains about a missing import, check the mo
 ```bash
 fetchez <module_name> --help
 If a dependency is missing, the module will typically exit gracefully with an error message telling you exactly what to pip install.
-
+```
 
 ## 🐄 Plugins & Extensions
 
