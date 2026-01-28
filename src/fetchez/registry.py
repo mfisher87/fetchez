@@ -111,6 +111,22 @@ class FetchezRegistry:
             'license': 'CC-BY-NC-SA 4.0',
             'urls': {'home': 'https://data.bris.ac.uk/data/dataset/s5hqmjcdj8yo2ibzi9b4ew3sn'}
         },
+
+        'sentinel2': {
+            'mod': 'fetchez.modules.sentinel2', 
+            'cls': 'Sentinel2', 
+            'category': 'Imagery',
+            'desc': 'Copernicus Sentinel-2 (Optical Imagery)',
+            'agency': 'ESA',
+            'tags': ['sentinel', 'satellite', 'imagery', 'copernicus', 'esa', 'optical'],
+            'region': 'Global',
+            'resolution': '10m / 20m / 60m',
+            'license': 'Copernicus Open Access',
+            'urls': {
+                'home': 'https://dataspace.copernicus.eu/',
+                'auth': 'https://identity.dataspace.copernicus.eu/auth/realms/CDSE/account/'
+            }
+        },
         
         # Digital Coast (DAV) and shortcuts (slr, cudem, coned)
         'dav': {
@@ -511,6 +527,19 @@ class FetchezRegistry:
             'license': 'ODbL',
             'urls': {'home': 'https://github.com/microsoft/GlobalMLBuildingFootprints'}
         },
+
+        'gba': {
+            'mod': 'fetchez.modules.gba', 
+            'cls': 'GBA', 
+            'category': 'Reference',
+            'desc': 'Global Building Atlas (LOD1 Footprints)',
+            'agency': 'TUM / DLR',
+            'tags': ['buildings', 'gba', 'footprints', 'lod1', 'urban', '3d'],
+            'region': 'Global (Partial Coverage)',
+            'resolution': 'Vector',
+            'license': 'Academic / Research',
+            'urls': {'home': 'https://www.wk.bgu.tum.de/en/global-building-atlas/'}
+        },
         
         # CHS NONNA from Canada
         'chs': {
@@ -526,6 +555,32 @@ class FetchezRegistry:
             'urls': {'home': 'https://open.canada.ca/data/en/dataset/d3881c4c-650d-4070-bf9b-1e00aabf0a1d'}
         },
 
+        'wadnr': {
+            'mod': 'fetchez.modules.wadnr', 
+            'cls': 'WADNR', 
+            'category': 'Topography',
+            'desc': 'Washington State DNR LiDAR',
+            'agency': 'WA DNR',
+            'tags': ['lidar', 'washington', 'dnr', 'wa', 'elevation', 'point-cloud'],
+            'region': 'Washington State',
+            'resolution': 'High-Res LiDAR',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://lidarportal.dnr.wa.gov/'}
+        },
+        
+        'nswtb': {
+            'mod': 'fetchez.modules.nswtb', 
+            'cls': 'NSWTB', 
+            'category': 'Bathymetry',
+            'desc': 'NSW Marine LiDAR Topo-Bathy (Contours/DEM)',
+            'agency': 'NSW Government',
+            'tags': ['nsw', 'australia', 'bathymetry', 'lidar', 'contours', 'topo-bathy'],
+            'region': 'Australia (NSW Coast)',
+            'resolution': '5m Contours / 5m DEM',
+            'license': 'Creative Commons Attribution',
+            'urls': {'home': 'https://datasets.seed.nsw.gov.au/dataset/marine-lidar-topo-bathy-2018'}
+        },
+        
         'emodnet': {
             'mod': 'fetchez.modules.emodnet', 
             'cls': 'EMODNet', 
@@ -589,6 +644,75 @@ class FetchezRegistry:
             'resolution': 'Vector',
             'license': 'Public Domain',
             'urls': {'home': 'https://tigerweb.geo.census.gov/'}
+        },
+
+        'ngs': {
+            'mod': 'fetchez.modules.ngs', 
+            'cls': 'NGS', 
+            'category': 'Reference',
+            'desc': 'National Geodetic Survey (NGS) Monuments',
+            'agency': 'NOAA',
+            'tags': ['ngs', 'monuments', 'survey', 'benchmarks', 'geodesy', 'control'],
+            'region': 'USA',
+            'resolution': 'Point Data',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://geodesy.noaa.gov/'}
+        },
+
+        'hydrolakes': {
+            'mod': 'fetchez.modules.hydrolakes', 
+            'cls': 'HydroLAKES', 
+            'category': 'Hydrography',
+            'desc': 'HydroLAKES Global Shoreline Polygons',
+            'agency': 'HydroSHEDS',
+            'tags': ['lakes', 'hydrography', 'polygons', 'global', 'hydrosheds'],
+            'region': 'Global',
+            'resolution': 'Vector',
+            'license': 'CC-BY 4.0',
+            'urls': {'home': 'https://www.hydrosheds.org/products/hydrolakes'}
+        },
+
+        'globathy': {
+            'mod': 'fetchez.modules.globathy', 
+            'cls': 'GLOBathy', 
+            'category': 'Bathymetry',
+            'desc': 'GLOBathy (Global Lake Bathymetry Parameters)',
+            'agency': 'HydroSHEDS / Figshare',
+            'tags': ['lakes', 'bathymetry', 'depth', 'volume', 'global'],
+            'region': 'Global',
+            'resolution': 'Derived Parameters',
+            'license': 'CC-BY 4.0',
+            'urls': {'home': 'https://figshare.com/articles/dataset/GLOBathy_Bathymetric_Data/13353392'}
+        },
+        
+        # Proj CDN
+        'proj': {
+            'mod': 'fetchez.modules.proj', 
+            'cls': 'PROJ', 
+            'category': 'Geodesy',
+            'desc': 'PROJ CDN Transformation Grids (Geoids, Shift Grids)',
+            'agency': 'PROJ / NOAA / NGA',
+            'tags': ['proj', 'cdn', 'geoid', 'egm2008', 'vertcon', 'nadcon', 'transformation'],
+            'region': 'Global',
+            'resolution': 'Various',
+            'license': 'Public Domain / CC0',
+            'urls': {'home': 'https://cdn.proj.org/'},
+            'aliases': ['geoid', 'vertcon']
+        },
+
+        # NOAA VDATUM Tidal Transformations
+        'vdatum': {
+            'mod': 'fetchez.modules.vdatum', 
+            'cls': 'VDatum', 
+            'category': 'Geodesy',
+            'desc': 'NOAA VDatum Tidal Grids (MLLW, MHHW)',
+            'agency': 'NOAA',
+            'tags': ['vdatum', 'tidal', 'mllw', 'mhhw', 'noaa', 'vertical-datum', 'transformation'],
+            'region': 'USA / Coastal',
+            'resolution': 'Varies (Regional Grids)',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://vdatum.noaa.gov/'},
+            'aliases': ['tidal_grids']
         },
         
         # The following modules don't need a `region`,
