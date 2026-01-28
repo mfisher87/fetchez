@@ -16,6 +16,8 @@ import os, sys
 import datetime
 import getpass
 import logging
+import zipfile
+import shutil
 import tqdm
 
 logger = logging.getLogger(__name__)
@@ -210,3 +212,55 @@ def remove_glob(pathname: str):
                 os.remove(p)
             except OSError as e:
                 logger.error(f"Could not remove {p}: {e}")
+
+
+# =============================================================================
+# Archives, etc.
+# =============================================================================
+def p_unzip(src_fn: str, ext: list, outdir: str = '.', verbose: bool = False) -> list:
+    """Unzip specific extensions from a zip file, optionally flattening directory structures.
+    
+    Args:
+        src_fn: Path to the source zip file.
+        ext: List of extensions to extract (e.g., ['shp', 'shx', 'dbf']).
+        outdir: Directory to extract files into.
+        verbose: Print debug info.
+        
+    Returns:
+        List of paths to the extracted files.
+    """
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+        
+    extracted_files = []
+    
+    try:
+        with zipfile.ZipFile(src_fn, 'r') as z:
+            want_exts = [e.lower() if e.startswith('.') else f'.{e.lower()}' for e in ext]
+            
+            for file_info in z.infolist():
+                if file_info.is_dir():
+                    continue
+                
+                _, f_ext = os.path.splitext(file_info.filename)
+                if f_ext.lower() in want_exts:
+                    filename = os.path.basename(file_info.filename)
+                    target_path = os.path.join(outdir, filename)
+                    
+                    if verbose:
+                        logger.info(f"Extracting {filename}...")
+                        
+                    with z.open(file_info) as source, open(target_path, "wb") as target:
+                        shutil.copyfileobj(source, target)
+                        
+                    extracted_files.append(target_path)
+                    
+    except zipfile.BadZipFile:
+        if verbose:
+            logger.error(f"Bad Zip File: {src_fn}")
+    except Exception as e:
+        if verbose:
+            logger.error(f"Unzip error {src_fn}: {e}")
+            
+    return extracted_files
+                

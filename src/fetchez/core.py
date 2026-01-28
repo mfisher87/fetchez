@@ -42,6 +42,8 @@ from . import utils
 from . import spatial
 from . import __version__
 
+STOP_EVENT = threading.Event()
+
 CUDEM_USER_AGENT = f'Fetches/{__version__}'
 DEFAULT_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0'
 R_HEADERS = {'User-Agent': DEFAULT_USER_AGENT}
@@ -532,6 +534,9 @@ class Fetch:
                                 leave=False
                         ) as pbar:
                             for chunk in req.iter_content(chunk_size=8192):
+                                if STOP_EVENT.is_set():
+                                    logger.warning("Download cancelled by user.")
+                                    return -1
                                 if chunk:
                                     f.write(chunk)
                                     pbar.update(len(chunk))
@@ -732,6 +737,8 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3):
         modules: List of FetchModule instances (pre-populated with .results)
         threads: Number of parallel threads
     """
+
+    STOP_EVENT.clear()
     
     all_entries = []
     for mod in modules:
@@ -745,23 +752,31 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3):
 
     logger.info(f"Starting parallel fetch: {total_files} files with {threads} threads.")
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
-        futures = {
-            executor.submit(_fetch_worker, mod, entry, verbose=True): entry 
-            for mod, entry in all_entries
-        }
+    try:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+            futures = {
+                executor.submit(_fetch_worker, mod, entry, verbose=True): entry 
+                for mod, entry in all_entries
+            }
+
+            with tqdm(total=total_files, unit='file', desc='Fetching', position=0, leave=True) as pbar:
+                for future in concurrent.futures.as_completed(futures):
+                    entry = futures[future]
+                    try:
+                        status = future.result()
+                        if status != 0:
+                            logger.error(f"Failed to download: {os.path.basename(entry['dst_fn'])}")
+                    except Exception as e:
+                        logger.error(f"Error fetching {entry['url']}: {e}")
+
+                    pbar.update(1)
+                    
+    except KeyboardInterrupt:
+        STOP_EVENT.set()
+        logge.warning("\n🛑 Stopping downloads... (waiting for workers to exit)")        
+        #executor.shutdown(wait=False, cancel_futures=True)
         
-        with tqdm(total=total_files, unit='file', desc='Fetching', position=0, leave=True) as pbar:
-            for future in concurrent.futures.as_completed(futures):
-                entry = futures[future]
-                try:
-                    status = future.result()
-                    if status != 0:
-                        logger.error(f"Failed to download: {os.path.basename(entry['dst_fn'])}")
-                except Exception as e:
-                    logger.error(f"Error fetching {entry['url']}: {e}")
-                
-                pbar.update(1)
+        raise
 
                 
 def run_fetches(modules, threads=3):    

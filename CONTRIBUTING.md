@@ -144,6 +144,40 @@ Open src/fetchez/registry.py and add your module to the _modules dictionary. Ple
 4.  **Test It:**
     Run `fetchez mydata --help` to ensure it loads correctly.
 
+### Handling Dependencies & Imports
+
+Fetchez aims to keep its core footprint small. If your new module or plugin requires a non-standard library (e.g., `boto3`, `pyshp`, `netCDF4`):
+
+1.  **Do Not Add to Core Requirements:** Do not add the library to `pyproject.toml` unless it is essential for the entire `fetchez` engine.
+2.  **Soft Imports:** Wrap your imports in a `try/except ImportError` block so the module does not crash the CLI for users who don't use that specific data source.
+3.  **Document It:** Clearly list the required packages in the class docstring.
+
+**Example:**
+
+```python
+try:
+    import boto3
+    HAS_BOTO = True
+except ImportError:
+    HAS_BOTO = False
+
+@cli.cli_opts(help_text="Fetch data from AWS")
+class MyS3Fetcher(core.FetchModule):
+    """Fetches data from private S3 buckets.
+
+    **Dependencies:**
+    This module requires `boto3`. Install it via:
+    `pip install boto3`
+    """
+    
+    def run(self):
+        if not HAS_BOTO:
+            # Use the logger to inform the user nicely
+            logger.error("This module requires 'boto3'. Please install it to proceed.")
+            return
+        
+        # Proceed with fetching...
+
 ## 📝 Pull Request Guidelines
 
 1.  **Branching:** Create a new branch for your changes (`git checkout -b feature/add-mydata`).

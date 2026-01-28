@@ -23,8 +23,9 @@ try:
     import boto3
     from botocore import UNSIGNED
     from botocore.client import Config
+    HAS_BOTO = TRUE
 except ImportError:
-    boto3 = None
+    HAS_BOTO = FALSE
 
 try:
     from osgeo import ogr
@@ -78,8 +79,6 @@ class BlueTopo(core.FetchModule):
     def _get_s3_client(self):
         """Return an anonymous S3 client."""
         
-        if not boto3:
-             raise ImportError("BlueTopo requires 'boto3'. Install it with: pip install boto3")
         return boto3.client('s3', config=Config(signature_version=UNSIGNED))
 
     
@@ -103,6 +102,10 @@ class BlueTopo(core.FetchModule):
     
     def run(self):
         """Run the BlueTopo fetch module."""
+
+        if not HAS_BOTO:
+            logger.error("This module requires 'boto3'. Please install it to proceed.")
+            return
         
         if self.region is None:
             return []

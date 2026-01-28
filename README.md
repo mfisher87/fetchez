@@ -162,6 +162,17 @@ Fetchez supports over 40 modules categorized by data type. Run ```fetchez --modu
 | Reference | osm (OpenStreetMap), vdatum |
 | Generic | http (Direct URL), earthdata (NASA) |
 
+### 🛟️ Module-Specific Dependencies
+
+While the core `fetchez` engine is lightweight, some specialized data modules may require extra Python libraries to function (e.g., `pyshp` for TIGER data, `boto3` for AWS-based sources, or `gdal` for complex vector operations).
+
+If you try to run a module and it complains about a missing import, check the module's help command. We document these requirements in the module's help text:
+
+```bash
+fetchez <module_name> --help
+If a dependency is missing, the module will typically exit gracefully with an error message telling you exactly what to pip install.
+
+
 ## 🐄 Plugins & Extensions
 
 Need to fetch data from a specialized local server, a private S3 bucket, or a niche API? You don't need to fork the repo!

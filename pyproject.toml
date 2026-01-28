@@ -33,17 +33,11 @@ dependencies = [
 
 keywords = ["Geospatial"]
 
-[project.optional-dependencies]
-boto3 = ["boto3"]
-mercantile = ["mercantile"]
-utm = ["utm"]
-
 [project.scripts]
 # CLI Entry Points
-gfetch = "fetchez.cli:fetchez_cli"
 fetchez = "fetchez.cli:fetchez_cli"
-bing_bfp = "fetchez.modules.bingbfp:bing_bfp_cli"
-osm_coast = "fetchez.modules.osm:osm_coast_cli"
+#bing_bfp = "fetchez.modules.bingbfp:bing_bfp_cli"
+#osm_coast = "fetchez.modules.osm:osm_coast_cli"
 
 [project.urls]
 Homepage = "https://github.com/ciresdem/fetchez"
@@ -54,7 +48,7 @@ Issues = "https://github.com/ciresdem/fetchez/issues"
 [tool.setuptools.packages.find]
 where = ["src"]  # Look for packages inside the 'src' folder
 include = ["fetchez*"]  # Include the package named 'fetchez'
-exclude = ["tests*", "docs*", "scripts*"]
+exclude = ["tests*", "docs*", "scripts*", "examples*"]
 namespaces = false 
 
 [tool.setuptools.package-data]

@@ -9,3 +9,7 @@ recursive-include src/fetchez/data *.geojson *.json
 # Exclude junk
 global-exclude __pycache__
 global-exclude *.py[co]
+
+# Explicitly exclude the cookbook/examples
+prune examples
+prune workflows

@@ -76,6 +76,20 @@ class FetchezRegistry:
             }
         },
 
+        # Digital Coast (DAV)
+        'dav': {
+            'mod': 'fetchez.modules.dav', 
+            'cls': 'DAV', 
+            'category': 'Multidisciplinary',
+            'desc': 'NOAA Digital Coast Data Access Viewer',
+            'agency': 'NOAA',
+            'tags': ['noaa', 'lidar', 'imagery', 'dem', 'digital coast', 'landcover'],
+            'region': 'USA',
+            'resolution': 'Variable',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://coast.noaa.gov/dataviewer/'}
+        },
+        
         # NOAA ETOPO-2022
         'etopo': {
             'mod': 'fetchez.modules.etopo', 
@@ -322,6 +336,32 @@ class FetchezRegistry:
             'urls': {'home': 'https://www.ndbc.noaa.gov/'}
         },
 
+        'tides': {
+            'mod': 'fetchez.modules.tides', 
+            'cls': 'Tides', 
+            'category': 'Oceanography',
+            'desc': 'NOAA Tides & Currents (CO-OPS)',
+            'agency': 'NOAA',
+            'tags': ['tides', 'water level', 'co-ops', 'oceanography', 'stations'],
+            'region': 'USA / Coastal',
+            'resolution': 'Temporal (6-min / Hourly)',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://tidesandcurrents.noaa.gov/'}
+        },
+        
+        'bing': {
+            'mod': 'fetchez.modules.bing', 
+            'cls': 'Bing', 
+            'category': 'Reference',
+            'desc': 'Microsoft Global ML Building Footprints',
+            'agency': 'Microsoft',
+            'tags': ['buildings', 'footprints', 'ai', 'ml', 'vector'],
+            'region': 'Global',
+            'resolution': 'Vector',
+            'license': 'ODbL',
+            'urls': {'home': 'https://github.com/microsoft/GlobalMLBuildingFootprints'}
+        },
+        
         # CHS NONNA from Canada
         'chs': {
             'mod': 'fetchez.modules.chs', 
@@ -347,6 +387,32 @@ class FetchezRegistry:
             'resolution': '~115m (1/16 arc-min)',
             'license': 'Open Data',
             'urls': {'home': 'https://portal.emodnet-bathymetry.eu/'}
+        },
+
+        'arcticdem': {
+            'mod': 'fetchez.modules.arcticdem', 
+            'cls': 'ArcticDEM', 
+            'category': 'Topography',
+            'desc': 'ArcticDEM (Polar Geospatial Center)',
+            'agency': 'PGC / NGA',
+            'tags': ['arctic', 'dem', 'topography', 'elevation', 'polar'],
+            'region': 'Arctic',
+            'resolution': '2m, 10m, 32m',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://www.pgc.umn.edu/data/arcticdem/'}
+        },
+        
+        'tiger': {
+            'mod': 'fetchez.modules.tiger', 
+            'cls': 'Tiger', 
+            'category': 'Reference',
+            'desc': 'US Census Bureau TIGER (Boundaries)',
+            'agency': 'US Census Bureau',
+            'tags': ['census', 'tiger', 'boundaries', 'states', 'counties', 'tracts'],
+            'region': 'USA',
+            'resolution': 'Vector',
+            'license': 'Public Domain',
+            'urls': {'home': 'https://tigerweb.geo.census.gov/'}
         },
         
         # The following modules don't need a `region`,
