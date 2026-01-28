@@ -11,7 +11,7 @@ Unlike the core `fetchez` CLI, these scripts may require additional dependencies
 | `process_bing.py` | Downloads Microsoft Building Footprints and merges them into a single GeoPackage. | `fetchez`, `gdal` |
 | `visualize_tides.py` | Fetches NOAA Tide data and generates a generic plot. | `fetchez`, `matplotlib`, `pandas` |
 
-## 🚀 How to Run
+## 💻 How to Run
 
 1.  Ensure you have `fetchez` installed (`pip install fetchez`).
 2.  Install any script-specific dependencies (e.g., `conda install gdal`).
