@@ -31,7 +31,7 @@ Originally part of the [CUDEM](https://github.com/ciresdem/cudem) project, Fetch
 
 ## 📦 Installation
 
-## From Pip/PyPi
+**From Pip/PyPi**
 
 ```bash
 pip install fetchez
