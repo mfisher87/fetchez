@@ -17,6 +17,10 @@ from fetchez import cli
 
 # OpenTopography S3 Mirror (Public)
 NASADEM_BASE_URL = 'https://opentopography.s3.sdsc.edu/minio/download/raster/NASADEM/NASADEM_be'
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
+    'referer': NASADEM_BASE_URL
+}
 
 # =============================================================================
 # NASADEM Module
@@ -42,6 +46,7 @@ class NASADEM(core.FetchModule):
     
     def __init__(self, **kwargs):
         super().__init__(name='nasadem', **kwargs)
+        self.headers = HEADERS
 
         
     def _format_tile_name(self, lat, lon):
@@ -57,7 +62,7 @@ class NASADEM(core.FetchModule):
         ew = 'e' if lon >= 0 else 'w'
         lon_str = f"{abs(lon):03d}"
         
-        return f"NASADEM_HGT_{ns}{lat_str}{ew}{lon_str}.hgt"
+        return f"NASADEM_HGT_{ns}{lat_str}{ew}{lon_str}.tif"
 
     
     def run(self):
@@ -82,13 +87,13 @@ class NASADEM(core.FetchModule):
                 fname = self._format_tile_name(y, x)
                 
                 # Construct URL
-                url = f"{NASADEM_BASE_URL}/{fname}"
+                url = f"{NASADEM_BASE_URL}/{fname}?token="
                 
                 # Add to results
                 self.add_entry_to_results(
                     url=url,
                     dst_fn=fname,
-                    data_type='hgt',
+                    data_type='gtif',
                     agency='NASA / OpenTopography',
                     title=f"NASADEM Tile {y}/{x}"
                 )
