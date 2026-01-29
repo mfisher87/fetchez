@@ -1,6 +1,6 @@
-# 🧪 Fetchez Workflows, Examples & User Scripts
+# 🧪 Fetchez Workflows, Examples & Scripts
 
-This directory contains standalone examples, scripts and workflows that demonstrate how to use `fetchez` as a Python library to build powerful geospatial workflows.
+This directory contains standalone examples and scripts that demonstrate how to use `fetchez` as a Python library to build powerful geospatial workflows.
 
 Unlike the core `fetchez` CLI, these scripts may require additional dependencies (like `gdal`, `pandas`, `rasterio`, or `geopandas`).
 
@@ -9,6 +9,7 @@ Unlike the core `fetchez` CLI, these scripts may require additional dependencies
 | Script | Description | Dependencies |
 | :--- | :--- | :--- |
 | `process_bing.py` | Downloads Microsoft Building Footprints and merges them into a single GeoPackage. | `fetchez`, `gdal` |
+| `process_osm_coastline.py` | Downloads a coastline vector from OSM and processes it into a land/water mask polygon. | `fetchez`, `ogr`, 'osr' |
 | `visualize_tides.py` | Fetches NOAA Tide data and generates a generic plot. | `fetchez`, `matplotlib`, `pandas` |
 
 ## 💻 How to Run
