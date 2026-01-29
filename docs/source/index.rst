@@ -20,12 +20,9 @@ Fetchez is a lightweight, modular Python library and command-line tool designed 
 
 .. toctree::
    :maxdepth: 2
-   :caption: Data Catalog
+   :caption: Module Catalog
 
    modules/index
-   modules/topography
-   modules/bathymetry
-   modules/oceanography
 
 .. toctree::
    :maxdepth: 2
