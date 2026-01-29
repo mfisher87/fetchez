@@ -996,10 +996,6 @@ class FetchModule:
         
 # Simple Fetch Module to fetch a url.
 # It will just add that url to `results`.
-@cli.cli_opts(
-    help_text='Fetch a url'
-    url='URL to fetch'
-)
 class HttpDataset(FetchModule):
     """Fetch an http file directly."""
     

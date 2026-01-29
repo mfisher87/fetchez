@@ -30,14 +30,13 @@ NOS_DATA_URL = 'https://data.ngdc.noaa.gov/platforms/ocean/nos/coast/'
 # HydroNOS Module
 # =============================================================================
 @cli.cli_opts(
-    help_text="NOAA NOS Hydrographic Surveys (BAG & XYZ)",
-    datatype="Data type to fetch: 'bag' (Bathymetric Attributed Grid) or 'xyz' (Soundings)",
-    layer="ArcGIS Layer ID: 0 (BAGs only) or 1 (All Digital Data) [Default: 1]",
-    survey_id="Filter by specific Survey ID (e.g. H12345)",
-    min_year="Filter by minimum survey year",
-    max_year="Filter by maximum survey year"
+    help_text='NOAA NOS Hydrographic Surveys (BAG & XYZ)',
+    datatype='Data type to fetch: "bag" (Bathymetric Attributed Grid) or "xyz" (Soundings)',
+    layer='ArcGIS Layer ID: 0 (BAGs only) or 1 (All Digital Data) [Default: 1]',
+    survey_id='Filter by specific Survey ID (e.g. H12345)',
+    min_year='Filter by minimum survey year',
+    max_year='Filter by maximum survey year'
 )
-
 class HydroNOS(core.FetchModule):
     """Fetch NOAA National Ocean Service (NOS) Hydrographic Surveys.
     
@@ -81,7 +80,7 @@ class HydroNOS(core.FetchModule):
         params = {
             'where': self.where,
             'outFields': '*',
-            'geometry': f"{w},{s},{e},{n}",
+            'geometry': f'{w},{s},{e},{n}',
             'inSR': 4326,
             'outSR': 4326,
             'f': 'pjson',
@@ -97,11 +96,11 @@ class HydroNOS(core.FetchModule):
         try:
             response = req.json()
         except json.JSONDecodeError:
-            logger.error("Failed to parse HydroNOS response.")
+            logger.error('Failed to parse HydroNOS response.')
             return self
 
         features = response.get('features', [])
-        logger.info(f"Found {len(features)} surveys.")
+        logger.info(f'Found {len(features)} surveys.')
 
         for feature in features:
             attrs = feature.get('attributes', {})
@@ -139,9 +138,6 @@ class HydroNOS(core.FetchModule):
             if survey_id in self.exclude_survey_id.split('/'): return
         
         # Construct Base Data Link
-        # The API gives a generic link often pointing to a parent dir.
-        # We try to reconstruct the standard NCEI path structure.
-        # Example: .../platforms/ocean/nos/coast/H12001-H14000/H12345/
         try:
             # Extract the range folder (e.g. H12001-H14000) from the API url
             nos_dir = download_url.split('/')[-2]
@@ -156,7 +152,7 @@ class HydroNOS(core.FetchModule):
             bags_exist = str(attrs.get('BAGS_EXIST', '')).upper()
             
             if bags_exist in ['TRUE', 'Y', 'YES']:
-                bag_dir_url = f"{data_link}BAG/"
+                bag_dir_url = f'{data_link}BAG/'
                 
                 # Scrape the directory for .bag files
                 bag_page = core.Fetch(bag_dir_url).fetch_html()
@@ -165,7 +161,7 @@ class HydroNOS(core.FetchModule):
                     bags = bag_page.xpath('//a[contains(@href, ".bag")]/@href')
                     for bag in bags:
                         # Sometimes href is relative, sometimes full
-                        url = bag if 'http' in bag else f"{bag_dir_url}{bag}"
+                        url = bag if 'http' in bag else f'{bag_dir_url}{bag}'
                         
                         self.add_entry_to_results(
                             url=url,
