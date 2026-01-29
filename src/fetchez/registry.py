@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 # metadata. (`mod` and `cls` still need to set correctly.
 # =============================================================================
 class FetchezRegistry:
-    """Fetchez Module Registry with rich metadata for discovery."""
+    """Fetchez Module Registry with expanded metadata for discovery."""
             
     _modules = {
         
