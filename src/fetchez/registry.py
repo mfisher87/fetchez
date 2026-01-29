@@ -793,7 +793,7 @@ class FetchezRegistry:
     @classmethod
     def get_info(cls, mod_key: str) -> dict:
         """Retrieve the full metadata dictionary for a module, 
-        resolving inheritance.
+        resolving metadta inheritance.
         """
         
         # Resolve aliases first
@@ -886,8 +886,7 @@ class FetchezRegistry:
                             if inspect.isclass(obj) and issubclass(obj, core.FetchModule):
                                 if obj is core.FetchModule: continue
                                 
-                                # Check for @cli_opts metadata (optional but recommended)
-                                # or defaults
+                                # Check for @cli_opts metadata; or defaults
                                 mod_key = getattr(obj, 'name', name.lower())
                                 logger.info(f'Loaded user plugin: {mod_key}')
                                 
