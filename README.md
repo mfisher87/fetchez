@@ -19,7 +19,7 @@ Originally part of the [CUDEM](https://github.com/ciresdem/cudem) project, Fetch
 
 ## 🌎 Features
 
-* One command to fetch data from 40+ different sources (SRTM, GMRT, NOAA NOS, USGS 3DEP, Copernicus, etc.).
+* One command to fetch data from 50+ different [modules](https://github.com/ciresdem/fetchez/blob/main/MODULES.md), (SRTM, GMRT, NOAA NOS, USGS 3DEP, Copernicus, etc.).
 * Built-in metadata registry allows you to search for datasets by tag, agency, resolution, or license.
 * Built-in "Fetchez Remote Elevation Datalist" (FRED) automatically indexes remote files for spatial querying without hitting APIs repeatedly.
 * Built-in download engine with automatic retries, timeout handling, and byte-range support for resuming interrupted downloads.
