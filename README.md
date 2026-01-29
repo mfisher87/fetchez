@@ -185,11 +185,11 @@ Need to fetch data from a specialized local server, a private S3 bucket, or a ni
 2.  Drop a python script there (e.g., `my_data.py`).
 3.  Run it: `fetchez my_data`
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for a full code example.
+See [CONTRIBUTING.md](https://github.com/ciresdem/fetchez/CONTRIBUTING.md) for a full code example.
 
 ## 🛠  Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](/CONTRIBUTING.md) for details on how to register new modules with our metadata schema.
+We welcome contributions! Please see [CONTRIBUTING.md](https://github.com/ciresdem/fetchez/CONTRIBUTING.md) for details on how to register new modules with our metadata schema.
 
 ## 🔱  Disclaimer on Data Persistence
 
@@ -205,6 +205,6 @@ We strive to keep our modules robust and our index fresh. If you encounter a bro
 
 ## 📄  License
 
-This project is licensed under the MIT License - see the [LICENSE](/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/ciresdem/fetchez/LICENSE) file for details.
 
 Copyright (c) 2010-2026 Regents of the University of Colorado
