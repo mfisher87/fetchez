@@ -56,7 +56,7 @@ print_welcome_banner = print_banner_orbit # alias for when we randomly change it
 def setup_logging(verbose=False):
     log_level = logging.INFO if verbose else logging.WARNING
     
-    logger = logging.getLogger('geofetch')
+    logger = logging.getLogger('fetchez')
     logger.setLevel(log_level)
     
     if logger.hasHandlers():
@@ -64,7 +64,7 @@ def setup_logging(verbose=False):
 
     handler = utils.TqdmLoggingHandler()
     
-    formatter = logging.Formatter('[ %(levelname)s ] %(message)s')
+    formatter = logging.Formatter('[ %(levelname)s ] %(name)s: %(message)s')
     handler.setFormatter(formatter)
     
     logger.addHandler(handler)
