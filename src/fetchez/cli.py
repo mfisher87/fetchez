@@ -224,7 +224,51 @@ def print_module_info(mod_key):
             print(f"    {k:<10}: {v}")
     print(f"{'-'*40}\n")
 
+
+def parse_hook_arg(arg_str):
+    """Parse a hook string into (name, kwargs).
+    Example: 'unzip:overwrite=true:verbose=1' -> ('unzip', {'overwrite': True, 'verbose': 1})
+    """
     
+    parts = arg_str.split(':')
+    name = parts[0]
+    kwargs = {}
+    
+    for p in parts[1:]:
+        if '=' in p:
+            k, v = p.split('=', 1)
+            kwargs[k] = utils.str2bool(v) if v.lower() in ['true', 'false'] else utils.float_or(v, v)
+        else:
+            kwargs[p] = True
+            
+    return name, kwargs
+
+
+def init_hooks(hook_list_strs):
+    """Convert a list of strings ['pipe', 'unzip:force=true'] into initialized Hook objects."""
+    
+    from .hooks.registry import HookRegistry
+    
+    active_instances = []
+    if not hook_list_strs:
+        return active_instances
+
+    for h_str in hook_list_strs:
+        name, kwargs = parse_hook_arg(h_str)
+        
+        HookCls = HookRegistry.get_hook(name)
+        if HookCls:
+            try:
+                instance = HookCls(**kwargs)
+                active_instances.append(instance)
+            except Exception as e:
+                logger.error(f"Failed to initialize hook '{name}': {e}")
+        else:
+            logger.warning(f"Hook '{name}' not found. Use --list-hooks to see available plugins.")
+            
+    return active_instances
+
+
 # =============================================================================
 # Command-line Interface(s) (CLI)
 # =============================================================================
@@ -235,6 +279,10 @@ def fetchez_cli():
 
     registry.FetchezRegistry.load_user_plugins()
 
+    from .hooks.registry import HookRegistry
+    HookRegistry.load_builtins()  
+    HookRegistry.load_user_plugins()
+    
     parser = argparse.ArgumentParser(
         description=f'{utils.CYAN}%(prog)s{utils.RESET} ({__version__}) :: Discover and Fetch remote geospatial data',
         formatter_class=argparse.RawTextHelpFormatter,
@@ -254,7 +302,9 @@ def fetchez_cli():
     parser.add_argument('-q', '--quiet', action='store_true', help='Lower the verbosity to a quiet')
     parser.add_argument('-m', '--modules', nargs=0, action=PrintModulesAction, help='Display the available modules')
     parser.add_argument('-n', '--inventory', action='store_true', help='Generate a data inventory, don\'t download any data')
-    parser.add_argument('-p', '--pipe-path', action='store_true', help='Print the absolute path of fetched files to stdout (useful for piping).')
+    parser.add_argument('--pipe-path', action='store_true', help='Print the absolute path of fetched files to stdout (useful for piping).')
+    parser.add_argument('--hook', action='append',  help="Enable a hook (e.g. '--hook unzip' or '--hook unzip:overwrite=true')")
+    parser.add_argument('--list-hooks', action='store_true', help="List available hooks and exit.")
     parser.add_argument('-v', '--version', action='version', version=f'%(prog)s {__version__}')
     
     # Pre-process Arguments to fix argparses handling of -R
@@ -294,6 +344,27 @@ def fetchez_cli():
             
         print("-" * 60)
         sys.exit(0)
+
+    if hasattr(global_args, 'list_hooks') and global_args.list_hooks:
+        print("\nAvailable Hooks:")
+        for name, cls_obj in HookRegistry._hooks.items():
+            desc = getattr(cls_obj, 'desc', 'No description')
+            print(f"  {name:<15} : {desc}")
+        sys.exit(0)
+
+    # Init Global Hooks
+    global_hook_objs = []
+    if hasattr(global_args, 'hook') and global_args.hook:
+        global_hook_objs = init_hooks(global_args.hook)
+
+    # Handle System Flags (Legacy support mapping to new Class system)
+    # If user types --pipe-path, we map it to the 'pipe' hook class
+    if global_args.pipe_path:
+        PipeHook = HookRegistry.get_hook('pipe')
+        if PipeHook:
+            global_hook_objs.append(PipeHook())
+        # Silence logging for pipes
+        logging.getLogger('fetchez').setLevel(logging.ERROR)
         
     module_keys = {}
     for key, val in registry.FetchezRegistry._modules.items():
@@ -341,6 +412,7 @@ def fetchez_cli():
         these_regions = [spatial.buffer_region(r, global_args.buffer) for r in these_regions]
         
     usable_modules = []
+    all_hooks = []
     for mod_key, mod_argv in commands:
         
         # LOAD MODULE HERE
@@ -356,13 +428,21 @@ def fetchez_cli():
             add_help=True,
             formatter_class=argparse.RawTextHelpFormatter
         )
-
+        mod_parser.add_argument('--hook', action='append', help=f"Hook for {mod_key} only.")
         _populate_subparser(mod_parser, mod_cls)
 
         mod_args_ns = mod_parser.parse_args(mod_argv)
         mod_kwargs = vars(mod_args_ns)
-        usable_modules.append((mod_cls, mod_kwargs))
-    
+
+        local_hook_objs = []
+        if 'hook' in mod_kwargs and mod_kwargs['hook']:
+            local_hook_objs = init_hooks(mod_kwargs['hook'])
+        del mod_kwargs['hook']
+
+        all_hooks = global_hook_objs + local_hook_objs
+            
+        usable_modules.append((mod_cls, mod_kwargs))        
+        
     for this_region in these_regions:
         # Output the data inventory if requested.
         # Update in the future to allow for different outputs, 'csv' or 'geojson'
@@ -385,8 +465,10 @@ def fetchez_cli():
         
         for mod_cls, mod_kwargs in usable_modules:
             try:
+                #print(mod_kwargs)
                 x_f = mod_cls(
                     src_region=this_region,
+                    hook=all_hooks,
                     **mod_kwargs  
                 )
                 
@@ -409,7 +491,7 @@ def fetchez_cli():
                     try:
                         # run_fetchez expects a list of modules, so we wrap x_f in brackets [x_f].
                         # It handles the progress bar and threading internally.
-                        core.run_fetchez([x_f], threads=global_args.threads, pipe_path=global_args.pipe_path)
+                        core.run_fetchez([x_f], threads=global_args.threads, hooks=all_hooks)
 
                     except (KeyboardInterrupt, SystemExit):
                         logger.error('User breakage... please wait while fetchez exits.')
