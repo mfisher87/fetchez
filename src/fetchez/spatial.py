@@ -72,7 +72,7 @@ def region_from_geojson(fn: str) -> Optional[Tuple[float, float, float, float]]:
     """Parse the bounding box of a GeoJSON file."""
     
     if not os.path.exists(fn): return None
-        
+    regions = []
     try:
         with open(fn, 'r') as f:
             data = json.load(f)
@@ -97,9 +97,10 @@ def region_from_geojson(fn: str) -> Optional[Tuple[float, float, float, float]]:
             else:
                 pass
 
-        if valid:
-            return (min_x, max_x, min_y, max_y)
-            
+            if valid:
+                regions.append((min_x, max_x, min_y, max_y))
+        if regions:
+            return regions
     except Exception as e:
         logger.warning(f'Failed to parse GeoJSON {fn}: {e}')
         
@@ -182,11 +183,14 @@ def parse_region(input_r: Union[str, List]) -> List[Tuple[float, float, float, f
     """
     
     regions = []
-
     # Single String
     if isinstance(input_r, str):
         r = parse_single_string(input_r)
-        if r: regions.append(r)
+        if r:
+            if isinstance(r, tuple):
+                regions.append(r)
+            elif isinstance(r, list):
+                regions.extend(r)
         return regions
 
     # Lists (could be coords OR list of identifier strings)
@@ -202,7 +206,12 @@ def parse_region(input_r: Union[str, List]) -> List[Tuple[float, float, float, f
             for item in input_r:
                 if isinstance(item, str):
                     r = parse_single_string(item)
-                    if r: regions.append(r)
+                    if r:
+                        if isinstance(r, tuple):
+                            regions.append(r)
+                        elif isinstance(r, list):
+                            regions.extend(r)
+                            if r: regions.append(r)
                 elif isinstance(item, (list, tuple)) and _coordinate_list_p(item):
                     r = region_from_list(item)
                     if r: regions.append(r)
