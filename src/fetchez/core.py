@@ -815,7 +815,7 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3, pipe_path=False)
                 executor.submit(_fetch_worker, mod, entry, verbose=True): entry 
                 for mod, entry in all_entries
             }
-            with tqdm(total=total_files, unit='file', desc='Fetching', position=0, leave=True) as pbar:
+            with tqdm(total=total_files, unit='file', desc=f'Fetching <{mod.name} @ {mod.region}>', position=0, leave=True) as pbar:
                 for i, future in enumerate(concurrent.futures.as_completed(futures)):
                     entry = futures[future]
                     try:
