@@ -791,24 +791,32 @@ def _fetch_worker(module, entry, verbose=True):
         return -1
 
     
-def run_fetchez(modules: List['FetchModule'], threads: int = 3, hooks=None):
+def run_fetchez(modules: List['FetchModule'], threads: int = 3, global_hooks=None):
     """Execute fetches in parallel using a ThreadPoolExecutor.
     Displays a single aggregate progress bar to prevent 'tearing'.
     
     Args:
         modules: List of FetchModule instances (pre-populated with .results)
         threads: Number of parallel threads
+        global_hooks: Hooks that apply to the ENTIRE batch (e.g. Audit, DryRun).
+                      Module-specific hooks (like Unzip) should be attached to the 
+                      modules themselves.
     """
 
     STOP_EVENT.clear()
 
     # Initialize Hooks
     # Separated by stage
-    if hooks is None: hooks = []
-    pre_hooks = [h for h in hooks if h.stage == 'pre']
-    file_hooks = [h for h in hooks if h.stage == 'file']
-    post_hooks = [h for h in hooks if h.stage == 'post']
-    
+    if global_hooks is None: global_hooks = []
+    pre_hooks = [h for h in global_hooks if h.stage == 'pre']
+    for hook in pre_hooks:
+        try:
+            result = hook.run(all_entries)
+            if isinstance(result, list):
+                all_entries = result
+        except Exception as e:
+            logger.error(f"Pre-fetch hook '{hook.name}' failed: {e}")
+            
     all_entries = [] # entries pre-fetch
     for mod in modules:
         for entry in mod.results:
@@ -817,8 +825,6 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3, hooks=None):
     for hook in pre_hooks:
         try:
             result = hook.run(all_entries)
-            # If hook returns a list, update our working set
-            # This allows hooks to filter items or empty the list (Dry Run)
             if isinstance(result, list):
                 all_entries = result
                 
@@ -842,7 +848,7 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3, hooks=None):
             }
             with tqdm(total=total_files, unit='file', desc=f'Fetching <{mod.name} @ {mod.region}>', position=0, leave=True) as pbar:
                 for i, future in enumerate(concurrent.futures.as_completed(futures)):
-                    original_entry = futures[future]
+                    mod, original_entry = futures[future]
                     try:
                         status = future.result()
                         original_entry.update({'status': status})
@@ -854,32 +860,28 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3, hooks=None):
                         original_entry.update({'status': -1})
                         
                     current_entries = [original_entry]
+                    active_hooks = [h for h in global_hooks if h.stage == 'file'] + \
+                        [h for h in mod.hooks if h.stage == 'file']
 
-                    for hook in file_hooks:
+                    for hook in active_hooks:
                         try:
-                            # Pass the list of current entries to the hook
-                            # The hook returns a modified list (e.g. unzipped files)
-                            # or the original list if it decides to do nothing.
                             current_entries = hook.run(current_entries)
-                            
-                            # Ensure hook didn't return None or break the chain
-                            if current_entries is None:
-                                current_entries = [] # Hook filtered everything out
-                                
+                            if current_entries is None: current_entries = []
                         except Exception as e:
-                            logger.error(f"File hook '{hook.name}' failed: {e}")
-
-                    # These are the entries that survived the pipeline (e.g. TIFs extracted from ZIPs)
+                            logger.error(f"Hook '{hook.name}' failed: {e}")
+                            
+                    # These are the entries that survived the hooks (e.g. TIFs extracted from ZIPs)
                     if current_entries:
                         all_results.extend(current_entries)
                     
                     pbar.update(1)
 
+        post_hooks = [h for h in global_hooks if h.stage == 'post']
         for hook in post_hooks:
             try:
                 hook.run(all_results)
             except Exception as e:
-                logger.error(f'Post-fetch hook "{hook.name}" failed: {e}')
+                logger.error(f"Post-fetch hook '{hook.name}' failed: {e}")            
             
     except KeyboardInterrupt:
         STOP_EVENT.set()

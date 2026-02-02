@@ -478,8 +478,7 @@ CUDEM home page: <http://cudem.colorado.edu>
     for mod_key, mod_argv in commands:
         
         # LOAD MODULE HERE
-        mod_cls = registry.FetchezRegistry.load_module(mod_key)
-        
+        mod_cls = registry.FetchezRegistry.load_module(mod_key)        
         if mod_cls is None:
             logger.error(f'Could not load module: {mod_key}')
             continue
@@ -496,21 +495,18 @@ CUDEM home page: <http://cudem.colorado.edu>
         mod_args_ns = mod_parser.parse_args(mod_argv)
         mod_kwargs = vars(mod_args_ns)
 
-        local_hook_objs = []
         if 'hook' in mod_kwargs and mod_kwargs['hook']:
-            local_hook_objs = init_hooks(mod_kwargs['hook'])
-        del mod_kwargs['hook']
+            mod_kwargs['hook'] = init_hooks(mod_kwargs['hook'])
+        else:
+            mod_kwargs['hook'] = []
 
-        all_hooks = global_hook_objs + local_hook_objs
-            
-        usable_modules.append((mod_cls, mod_kwargs))        
+        usable_modules.append((mod_cls, mod_kwargs))
         
     for this_region in these_regions:
         for mod_cls, mod_kwargs in usable_modules:
             try:
                 x_f = mod_cls(
                     src_region=this_region,
-                    hook=all_hooks,
                     **mod_kwargs  
                 )
                 
@@ -528,7 +524,7 @@ CUDEM home page: <http://cudem.colorado.edu>
 
                 try:
                     # run_fetchez expects a list of modules, so we wrap x_f in brackets [x_f].
-                    core.run_fetchez([x_f], threads=global_args.threads, hooks=all_hooks)
+                    core.run_fetchez([x_f], threads=global_args.threads, hooks=global_hook_objs)
 
                 except (KeyboardInterrupt, SystemExit):
                     logger.error('User breakage... please wait while fetchez exits.')
