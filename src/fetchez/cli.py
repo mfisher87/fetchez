@@ -275,7 +275,7 @@ def init_hooks(hook_list_strs):
 def fetchez_cli():
     """Run fetchez from command-line using argparse."""
 
-    _usage = f'%(prog)s [-R REGION] [-H THREADS] [-A ATTEMPTS] [-l] [-z] [-q] [-v] [-m] [-n] [-s] [-i] MODULE [MODULE-OPTS]...' 
+    _usage = f'%(prog)s [-R REGION] [OPTIONS] MODULE [MODULE-OPTS]...'
 
     registry.FetchezRegistry.load_user_plugins()
 
@@ -288,25 +288,47 @@ def fetchez_cli():
         formatter_class=argparse.RawTextHelpFormatter,
         add_help=False,
         usage=_usage,
-        epilog=f"""CUDEM home page: <http://cudem.colorado.edu>"""
+        epilog=f"""
+Examples:
+  fetchez -R -105/-104/39/40 srtm_plus
+  fetchez -R loc:"Boulder, CO" copernicus --datatype=1
+  fetchez srtm_plus --hook unzip --pipe-path
+  fetchez --search bathymetry
+
+CUDEM home page: <http://cudem.colorado.edu>
+        """
     )
 
-    parser.add_argument('-R', '--region', '--aoi', action='append', help=spatial.region_help_msg())
-    parser.add_argument('-H', '--threads', type=int, default=1, help='Set the number of threads (default: 1)')
-    parser.add_argument('-A', '--attempts', type=int, default=5, help='Set the number of fetching attempts (default: 5)')
-    parser.add_argument('-B', '--buffer', type=float, default=0, metavar='PERCENT', help='Buffer the input region(s) by a percentage (e.g., 5 for 5 percent).')
-    parser.add_argument('-i', '--info', metavar='MODULE', help='Show detailed info about a specific module')
-    parser.add_argument('-s', '--search', metavar='TERM', help='Search modules by tag, agency, license, etc.')
-    parser.add_argument('-l', '--list', action='store_true', help='Return a list of fetch URLs in the given region.')
-    parser.add_argument('-z', '--no_check_size', action='store_true', help='Don\'t check the size of remote data if local data exists.')
-    parser.add_argument('-q', '--quiet', action='store_true', help='Lower the verbosity to a quiet')
-    parser.add_argument('-m', '--modules', nargs=0, action=PrintModulesAction, help='Display the available modules')
-    parser.add_argument('-n', '--inventory', action='store_true', help='Generate a data inventory, don\'t download any data')
-    parser.add_argument('--pipe-path', action='store_true', help='Print the absolute path of fetched files to stdout (useful for piping).')
-    parser.add_argument('--hook', action='append',  help="Enable a hook (e.g. '--hook unzip' or '--hook unzip:overwrite=true')")
-    parser.add_argument('--list-hooks', action='store_true', help="List available hooks and exit.")
-    parser.add_argument('-v', '--version', action='version', version=f'%(prog)s {__version__}')
+# --- Group 1: Core Selection ---
+    sel_grp = parser.add_argument_group('Geospatial Selection')
+    sel_grp.add_argument('-R', '--region', '--aoi', action='append', help=spatial.region_help_msg())
+    sel_grp.add_argument('-B', '--buffer', type=float, default=0, metavar='PCT', help='Buffer the input region by PCT percent.')
+
+    # --- Group 2: Discovery & Info ---
+    disc_grp = parser.add_argument_group('Discovery & Metadata')
+    disc_grp.add_argument('-m', '--modules', nargs=0, action=PrintModulesAction, help='List all available data modules.')
+    disc_grp.add_argument('-s', '--search', metavar='TERM', help='Search modules by tag, agency, or description.')
+    disc_grp.add_argument('-i', '--info', metavar='MODULE', help='Show detailed metadata for a specific module.')
+    disc_grp.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
+    disc_grp.add_argument('-v', '--version', action='version', version=f'%(prog)s {__version__}')
+
+    # --- Group 3: Execution Control ---
+    exec_grp = parser.add_argument_group('Execution Control')
+    exec_grp.add_argument('-H', '--threads', type=int, default=1, metavar='N', help='Number of parallel download threads (default: 1).')
+    exec_grp.add_argument('-A', '--attempts', type=int, default=5, metavar='N', help='Number of retry attempts per file (default: 5).')
+    exec_grp.add_argument('-z', '--no_check_size', action='store_true', help='Skip remote file size check if local file exists.')
+    exec_grp.add_argument('-q', '--quiet', action='store_true', help='Suppress progress bars and status messages.')
+
+    # --- Group 4: Pipeline & Hooks ---
+    pipe_grp = parser.add_argument_group('Pipeline & Hooks')
+    pipe_grp.add_argument('--hook', action='append', metavar='NAME', help="Attach a processing hook (e.g. '--hook unzip:overwrite=true').")
+    pipe_grp.add_argument('--list-hooks', action='store_true', help="List all available processing hooks.")
+    pipe_grp.add_argument('--pipe-path', action='store_true', help="Print absolute paths of downloaded files to stdout (alias for '--hook pipe').")
     
+    # These flags act as shortcuts for pre-hooks (dry-run)
+    pipe_grp.add_argument('--list', action='store_true', help='List discovered URLs without downloading (alias for "--hook list --hook dryrun").')
+    pipe_grp.add_argument('--inventory', action='store_true', help='Generate a metadata inventory without downloading (alias for "--hook inventory").')
+        
     # Pre-process Arguments to fix argparses handling of -R
     fixed_argv = fix_argparse_region(sys.argv[1:])
     global_args, remaining_argv = parser.parse_known_args(fixed_argv)
