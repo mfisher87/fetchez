@@ -37,6 +37,7 @@ class Unzip(FetchHook):
         self.remove = remove
         self.overwrite = overwrite
 
+        
     def run(self, entries):
         out_entries = []
         for entry in entries:
@@ -58,14 +59,14 @@ class Unzip(FetchHook):
                     if not self.overwrite:
                         if all(os.path.exists(os.path.join(extract_dir, f)) for f in files_to_extract):
                             logger.info(f"Skipping unzip (files exist): {os.path.basename(zip_path)}")
-                            out_entries.extend([{'url': url, 'dst_fn': os.path.join(extract_dir, f), 'data_type': dtype, 'status': 0} for f in files_to_extract])
+                            out_entries.extend([{**entry, 'dst_fn': os.path.join(extract_dir, f), 'status': 0} for f in files_to_extract])
                             continue
 
                     z.extractall(extract_dir)
 
                     for fname in files_to_extract:
                         full_path = os.path.join(extract_dir, fname)
-                        out_entries.append({'url': url, 'dst_fn': full_path, 'data_type': dtype, 'status': 0})
+                        out_entries.append({**entry, 'dst_fn': full_path, 'status': 0})
 
                 if self.remove:
                     try:

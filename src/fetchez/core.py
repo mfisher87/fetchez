@@ -843,11 +843,11 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3, global_hooks=Non
     try:
         with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
             futures = {
-                executor.submit(_fetch_worker, mod, entry, verbose=True): entry 
+                executor.submit(_fetch_worker, mod, entry, verbose=True): (mod, entry)
                 for mod, entry in all_entries
             }
             with tqdm(total=total_files, unit='file', desc=f'Fetching <{mod.name} @ {mod.region}>', position=0, leave=True) as pbar:
-                for i, future in enumerate(concurrent.futures.as_completed(futures)):
+                for future in concurrent.futures.as_completed(futures):
                     mod, original_entry = futures[future]
                     try:
                         status = future.result()
