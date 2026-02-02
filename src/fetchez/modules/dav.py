@@ -62,9 +62,10 @@ class DAV(core.FetchModule):
             title_filter: Optional[str] = None,
             want_footprints: bool = False,
             keep_footprints: bool = False,
+            name='dav',
             **kwargs
     ):
-        super().__init__(name='dav', **kwargs)
+        super().__init__(name=name, **kwargs)
         self.datatype = datatype.lower() if datatype else 'lidar'
         self.title_filter = title_filter
         self.want_footprints = want_footprints
