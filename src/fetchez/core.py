@@ -660,6 +660,10 @@ class Fetch:
 
 # =============================================================================
 # Threading & Queues
+#
+# `fetch_queue` and `fetch_results` have been depreciated, but left for legacy
+# usage. They don't currently support hooks, but that could be added if we
+# want to maintain these functions.
 # =============================================================================
 def fetch_queue(q: queue.Queue, stop_event: threading.Event, c: bool = True):
     """Worker for the fetch queue.
@@ -777,7 +781,6 @@ class fetch_results(threading.Thread):
         self.stop_event.set()
 
 
-# --- TESTING ---
 def _fetch_worker(module, entry, verbose=True):
     """Helper wrapper to call fetch_entry on a module."""
     
@@ -859,14 +862,13 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3, hooks=None):
                             # or the original list if it decides to do nothing.
                             current_entries = hook.run(current_entries)
                             
-                            # Safety check: Ensure hook didn't return None or break the chain
+                            # Ensure hook didn't return None or break the chain
                             if current_entries is None:
                                 current_entries = [] # Hook filtered everything out
                                 
                         except Exception as e:
                             logger.error(f"File hook '{hook.name}' failed: {e}")
 
-                    # Accumulate Final Results
                     # These are the entries that survived the pipeline (e.g. TIFs extracted from ZIPs)
                     if current_entries:
                         all_results.extend(current_entries)
@@ -1032,13 +1034,13 @@ class FetchModule:
 class HttpDataset(FetchModule):
     """Fetch an http file directly."""
     
-    def __init__(self, url, **kwargs):
+    def __init__(self, url=None, **kwargs):
         super().__init__(**kwargs)
         self.url = url
 
-        
-        self.add_entry_to_results(
-            self.url,
-            os.path.basename(self.url),
-            'https'
-        )
+        if self.url:
+            self.add_entry_to_results(
+                self.url,
+                os.path.basename(self.url),
+                'https'
+            )

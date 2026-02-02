@@ -314,12 +314,10 @@ CUDEM home page: <http://cudem.colorado.edu>
         """
     )
 
-# --- Group 1: Core Selection ---
     sel_grp = parser.add_argument_group('Geospatial Selection')
     sel_grp.add_argument('-R', '--region', '--aoi', action='append', help=spatial.region_help_msg())
     sel_grp.add_argument('-B', '--buffer', type=float, default=0, metavar='PCT', help='Buffer the input region by PCT percent.')
 
-    # --- Group 2: Discovery & Info ---
     disc_grp = parser.add_argument_group('Discovery & Metadata')
     disc_grp.add_argument('-m', '--modules', nargs=0, action=PrintModulesAction, help='List all available data modules.')
     disc_grp.add_argument('-s', '--search', metavar='TERM', help='Search modules by tag, agency, or description.')
@@ -327,14 +325,12 @@ CUDEM home page: <http://cudem.colorado.edu>
     disc_grp.add_argument('-h', '--help', action='help', help='Show this help message and exit.')
     disc_grp.add_argument('-v', '--version', action='version', version=f'%(prog)s {__version__}')
 
-    # --- Group 3: Execution Control ---
     exec_grp = parser.add_argument_group('Execution Control')
     exec_grp.add_argument('-H', '--threads', type=int, default=1, metavar='N', help='Number of parallel download threads (default: 1).')
     exec_grp.add_argument('-A', '--attempts', type=int, default=5, metavar='N', help='Number of retry attempts per file (default: 5).')
     exec_grp.add_argument('-z', '--no_check_size', action='store_true', help='Skip remote file size check if local file exists.')
     exec_grp.add_argument('-q', '--quiet', action='store_true', help='Suppress progress bars and status messages.')
 
-    # --- Group 4: Pipeline & Hooks ---
     pipe_grp = parser.add_argument_group('Pipeline & Hooks')
     pipe_grp.add_argument('--hook', action='append', metavar='NAME', help="Attach a processing hook (e.g. '--hook unzip:overwrite=true').")
     pipe_grp.add_argument('--list-hooks', action='store_true', help="List all available processing hooks.")
@@ -435,9 +431,7 @@ CUDEM home page: <http://cudem.colorado.edu>
                 commands.append((current_cmd, current_args))
             
             if len(arg.split(':')) > 1:
-                # Use local parse function
                 _, raw_name, current_args = parse_fmod_argparse(arg)
-                # Resolve alias if necessary
                 current_cmd = module_keys.get(raw_name, raw_name) 
             else:
                 current_cmd = module_keys.get(arg, arg)
@@ -456,7 +450,6 @@ CUDEM home page: <http://cudem.colorado.edu>
     if not global_args.region:
         these_regions = [(-180, 180, -90, 90)]
     else:
-        # Spatial returns tuples now, not Objects
         these_regions = spatial.parse_region(global_args.region)
 
     if global_args.buffer > 0:
@@ -497,7 +490,6 @@ CUDEM home page: <http://cudem.colorado.edu>
     for this_region in these_regions:
         for mod_cls, mod_kwargs in usable_modules:
             try:
-                #print(mod_kwargs)
                 x_f = mod_cls(
                     src_region=this_region,
                     hook=all_hooks,
