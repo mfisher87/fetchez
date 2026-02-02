@@ -179,7 +179,7 @@ class DAV(core.FetchModule):
         """Parse the downloaded index shapefile using PyShp + PyProj."""
         
         if not HAS_LIGHT_GEO:
-            logger.error('Missing libraries. Run: pip install pyproj pyshp')
+            logger.error('Missing libraries. Run: `pip install pyproj pyshp`')
             return
 
         prj_path = shp_path.replace('.shp', '.prj')
@@ -257,7 +257,7 @@ class DAV(core.FetchModule):
             return []
             
         if not HAS_LIGHT_GEO:
-            logger.error('This module requires pyproj and pyshp.')
+            logger.error('This module requires pyproj and pyshp. Run: `pip install pyproj pyshp`')
             return self
 
         logger.info(f'Querying Digital Coast API for {self.datatype}...')
