@@ -808,20 +808,20 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3, global_hooks=Non
     # Initialize Hooks
     # Separated by stage
     if global_hooks is None: global_hooks = []
-    pre_hooks = [h for h in global_hooks if h.stage == 'pre']
-    for hook in pre_hooks:
-        try:
-            result = hook.run(all_entries)
-            if isinstance(result, list):
-                all_entries = result
-        except Exception as e:
-            logger.error(f"Pre-fetch hook '{hook.name}' failed: {e}")
+    # for hook in pre_hooks:
+    #     try:
+    #         result = hook.run(all_entries)
+    #         if isinstance(result, list):
+    #             all_entries = result
+    #     except Exception as e:
+    #         logger.error(f"Pre-fetch hook '{hook.name}' failed: {e}")
             
     all_entries = [] # entries pre-fetch
     for mod in modules:
         for entry in mod.results:
-            all_entries.append((mod, entry))            
-
+            all_entries.append((mod, entry))
+            
+    pre_hooks = [h for h in global_hooks if h.stage == 'pre']
     for hook in pre_hooks:
         try:
             result = hook.run(all_entries)
