@@ -33,23 +33,25 @@ class HookRegistry:
         
     @classmethod
     def load_user_plugins(cls):
-        """Scan ~/.fetchez/hooks/ for python files."""
+        """Scan ~/.fetchez/hooks/ and .fetchez/hooks for python files."""
         
         home = os.path.expanduser("~")
-        p_dir = os.path.join(home, ".fetchez", "hooks")
-        
-        if not os.path.exists(p_dir): return
-        
-        sys.path.insert(0, p_dir)
-        for f in os.listdir(p_dir):
-            if f.endswith(".py") and not f.startswith("_"):
-                try:
-                    mod_name = f[:-3]
-                    mod = importlib.import_module(mod_name)
-                    cls._register_from_module(mod)
-                except Exception as e:
-                    logger.warning(f"Failed to load user hook {f}: {e}")
-        sys.path.pop(0)
+        home_hook_dir = os.path.join(home, ".fetchez", "hooks")
+        cwd_hook_dir = os.path.join(home, ".fetchez", "hooks")
+
+        for p_dr in [home_hook_dir, cwd_hook_dir]:
+            if noet os.path.exists(p_dir): continue
+
+            sys.path.insert(0, p_dir)
+            for f in os.listdir(p_dir):
+                if f.endswith(".py") and not f.startswith("_"):
+                    try:
+                        mod_name = f[:-3]
+                        mod = importlib.import_module(mod_name)
+                        cls._register_from_module(mod)
+                    except Exception as e:
+                        logger.warning(f"Failed to load user hook {f}: {e}")
+            sys.path.pop(0)
 
         
     @classmethod
