@@ -500,6 +500,8 @@ CUDEM home page: <http://cudem.colorado.edu>
         else:
             mod_kwargs['hook'] = []
 
+        del mod_kwargs['mod_hook']            
+
         usable_modules.append((mod_cls, mod_kwargs))
 
     # --- Loop regions and mods and run ---
