@@ -257,7 +257,7 @@ class FilenameFilter(FetchHook):
         self.regex = regex
 
         if stage:
-            self.stage = stage.lower() if stage.lower() in ['pre', 'file', 'post']
+            self.stage = stage.lower() if stage.lower() in ['pre', 'file', 'post'] else 'file'
         
     def run(self, entries):
         # Input: List of file entries
