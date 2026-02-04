@@ -181,7 +181,7 @@ fetchez charts --hook unzip --hook pipe
 
 You can write your own custom hooks (e.g., to log downloads to a database or trigger a script) and drop them in ~/.fetchez/hooks/. See [CONTRIBUTING.md](https://github.com/ciresdem/fetchez/blob/main/CONTRIBUTING.md) for details.
 
-## ⚡ Pipeline Presets (Macros)
+## 🔗 Pipeline Presets (Macros)
 Tired of typing the same chain of hooks every time? Presets allow you to define reusable workflow macros.
 
 Instead of running this long command:
