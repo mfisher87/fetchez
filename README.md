@@ -181,6 +181,54 @@ fetchez charts --hook unzip --hook pipe
 
 You can write your own custom hooks (e.g., to log downloads to a database or trigger a script) and drop them in ~/.fetchez/hooks/. See [CONTRIBUTING.md](https://github.com/ciresdem/fetchez/blob/main/CONTRIBUTING.md) for details.
 
+## ⚡ Pipeline Presets (Macros)
+Tired of typing the same chain of hooks every time? Presets allow you to define reusable workflow macros.
+
+Instead of running this long command:
+
+```bash
+
+fetchez copernicus --hook checksum:algo=sha256 --hook enrich --hook audit:file=log.json
+```
+
+You can simply run:
+
+```bash
+
+fetchez copernicus --audit-full
+```
+
+*** How to use them ***
+
+Fetchez comes with a few built-in shortcuts (check fetchez --help to see them), but the real power comes from defining your own.
+
+* Initialize your config: Run this command to generate a starter configuration file at `~/.fetchez/presets.json`:
+
+```bash
+
+fetchez --init-presets
+```
+
+* Define your workflow: Edit the JSON file to create a named preset. A preset is just a list of hooks with arguments.
+
+```json
+
+"my-clean-workflow": {
+  "help": "Unzip files and immediately remove the zip archive.",
+  "hooks": [
+    {"name": "unzip", "args": {"remove": "true"}},
+    {"name": "pipe"}
+  ]
+}
+```
+
+* Run it: Your new preset automatically appears as a CLI flag!
+
+```bash
+
+fetchez charts --my-clean-workflow
+```
+
 ## 🗺️ Supported Data Sources
 
 Fetchez supports over 50 modules categorized by data type. Run ```fetchez --modules``` to see the full list.
