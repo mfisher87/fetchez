@@ -401,8 +401,9 @@ def chunk_region(region: Tuple[float, float, float, float], chunk_size: float = 
         
     return chunks
 
+
 def region_and_inc_to_width_height(region, increment):
-    inc_val = str2inc(increment) if isinstance(increment, str) else increment
+    inc_val = utils.str2inc(increment) if isinstance(increment, str) else increment
     
     width = region[1] - region[0]
     height = region[3] - region[2]

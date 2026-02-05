@@ -39,7 +39,7 @@ class PipeOutput(FetchHook):
     def run(self, entries):
         """Input is: [url, path, type, status]"""
 
-        for entry in entries:
+        for mod, entry in entries:
             if entry.get('status') == 0:
                 with PRINT_LOCK:
                     print(os.path.abspath(entry.get('dst_fn')), file=sys.stdout, flush=True)
@@ -88,7 +88,7 @@ class Checksum(FetchHook):
 
             
     def run(self, entries):
-        for entry in entries:
+        for mod, entry in entries:
             filepath = entry.get('dst_fn')
             
             if entry.get('status') != 0 or not os.path.exists(filepath):
@@ -135,7 +135,7 @@ class MetadataEnrich(FetchHook):
     stage = 'file'
 
     def run(self, entries):
-        for entry in entries:
+        for mod, entry in entries:
             filepath = entry.get('dst_fn')
             
             if entry.get('status') != 0 or not os.path.exists(filepath):
@@ -234,6 +234,8 @@ class Audit(FetchHook):
             
         except Exception as e:
             print(f'Failed to write audit log: {e}')
+
+        return all_results
 
 
 class FilenameFilter(FetchHook):

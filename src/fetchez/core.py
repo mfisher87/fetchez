@@ -867,7 +867,7 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3, global_hooks=Non
 
                     active_hooks = utils.merge_hooks(gf_hooks, lf_hooks)
                     
-                    current_entries = [original_entry]
+                    current_entries = [(mod, original_entry)]
                     for hook in active_hooks:
                         try:
                             current_entries = hook.run(current_entries)
@@ -875,9 +875,12 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3, global_hooks=Non
                         except Exception as e:
                             logger.error(f'File hook "{hook.name}" failed: {e}')
 
-                    for res in current_entries:
-                        final_results_with_owner.append((mod, res))
-
+                    for item in current_entries:
+                        if isinstance(item, dict):
+                            final_results_with_owner.append((mod, item))
+                        else:
+                            final_results_with_owner.append(item)
+                            
                     pbar.update(1)
 
     except KeyboardInterrupt:
@@ -886,10 +889,11 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3, global_hooks=Non
         raise
 
     results_by_mod = {m: [] for m in modules}
-    for m, r in final_results_with_owner:
-        if m in results_by_mod:
-            results_by_mod[m].append(r)
-
+    for m, r_tuple in final_results_with_owner:
+        owner_mod, entry = r_tuple
+        if owner_mod in results_by_mod:
+            results_by_mod[owner_mod].append((owner_mod, entry))
+            
     for mod in modules:
         mod_post = [h for h in mod.hooks if h.stage == 'post']
         if mod_post and results_by_mod[mod]:
@@ -899,7 +903,8 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3, global_hooks=Non
                 except Exception as e:
                     logger.error(f'Module "{mod.name}" post-hook "{hook.name}" failed: {e}')
 
-    flat_results = [r for m, r in final_results_with_owner]    
+    flat_results = final_results_with_owner                     
+    #flat_results = [r for m, r in final_results_with_owner]    
     global_post = [h for h in global_hooks if h.stage == 'post']
     for hook in global_post:
         try:

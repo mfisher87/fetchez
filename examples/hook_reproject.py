@@ -61,7 +61,7 @@ class Reproject(FetchHook):
 
         processed_entries = []
 
-        for entry in entries:
+        for mod, entry in entries:
             url = entry.get('url')
             src_path = entry.get('dst_fn')
             status = entry.get('status')
@@ -77,7 +77,7 @@ class Reproject(FetchHook):
             valid_exts = ['.tif', '.tiff', '.img', '.nc', '.gtiff']
             _, ext = os.path.splitext(src_path)
             if ext.lower() not in valid_exts:
-                processed_entries.append(entry)
+                processed_entries.append((mod, entry))
                 continue
 
             # Prepare Output Path
@@ -112,6 +112,6 @@ class Reproject(FetchHook):
             except Exception as e:
                 logger.error(f"Reprojection failed for {src_path}: {e}")
                 # On failure, pass the original file through
-                processed_entries.append(entry)
+                processed_entries.append((mod, entry))
 
         return processed_entries

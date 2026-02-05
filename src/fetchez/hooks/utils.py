@@ -40,7 +40,7 @@ class Unzip(FetchHook):
         
     def run(self, entries):
         out_entries = []
-        for entry in entries:
+        for mod, entry in entries:
             url = entry.get('url')
             zip_path = entry.get('dst_fn')
             dtype = entry.get('data_type')
@@ -66,7 +66,7 @@ class Unzip(FetchHook):
 
                     for fname in files_to_extract:
                         full_path = os.path.join(extract_dir, fname)
-                        out_entries.append({**entry, 'dst_fn': full_path, 'status': 0})
+                        out_entries.append((mod, {**entry, 'dst_fn': full_path, 'status': 0, 'src_fn': zip_path}))
 
                 if self.remove:
                     try:
@@ -76,7 +76,7 @@ class Unzip(FetchHook):
 
             except Exception as e:
                 logger.error(f"Unzip failed for {zip_path}: {e}")
-                out_entries.append(entry)
+                out_entries.append((mod, entry))
 
         return out_entries
         
