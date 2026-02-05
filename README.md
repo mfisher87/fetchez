@@ -5,7 +5,7 @@
 </pre>
 **The Generic Geospatial Data Acquisition and Registry Engine**
 
-[![Version](https://img.shields.io/badge/version-0.3.3-blue.svg)](https://github.com/ciresdem/fetchez)
+[![Version](https://img.shields.io/badge/version-0.3.4-blue.svg)](https://github.com/ciresdem/fetchez)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.8+-yellow.svg)](https://www.python.org/)
 [![PyPI version](https://badge.fury.io/py/fetchez.svg)](https://badge.fury.io/py/fetchez)
@@ -17,18 +17,45 @@ Originally part of the [CUDEM](https://github.com/ciresdem/cudem) project, Fetch
 
 ---
 
+## ❓ Why Fetchez?
+Because finding geospatial data is the hardest part of the job.
+
+If you work with geospatial data, you know the pain:
+
+"Where is the latest 1-meter DEM for Seattle?"
+
+"Did the NOAA API endpoint change again?"
+
+"How do I script a download for 5,000 files from a map viewer that only has a 'Download' button?"
+
+Fetchez solves the "Logistics Gap."
+
+It abstracts away the messy reality of 50+ different public repositories (USGS, NOAA, NASA, ESA) into a single, consistent interface. You ask for "Bathymetry in the Gulf of Mexico," and Fetchez handles the API keys, pagination, retries, and file management—delivering clean, standardized files to your hard drive so you can get back to the actual science.
+
 ## 🌎 Features
 
-* One command to fetch data from 50+ different [modules](https://github.com/ciresdem/fetchez/blob/main/MODULES.md), (SRTM, GMRT, NOAA NOS, USGS 3DEP, Copernicus, etc.).
-* Build automated data pipelines (e.g. `download -> unzip -> reproject -> log`) using built-in or custom processing hooks.
-* Built-in metadata registry allows you to search for datasets by tag, agency, resolution, or license.
-* Built-in "Fetchez Remote Elevation Datalist" (FRED) automatically indexes remote files for spatial querying without hitting APIs repeatedly.
-* Built-in download engine with automatic retries, timeout handling, and byte-range support for resuming interrupted downloads.
+* One command to fetch data from 50+ different modules, (SRTM, GMRT, NOAA NOS, USGS 3DEP, Copernicus, etc.).
+* Built-in download management handles retries, resume-on-failure, authentication, and mirror switching automatically.
+* Seamlessly mix disparate data types (e.g., fetch Stream Gauges (JSON), DEMs (GeoTIFF), and Coastlines (Shapefile) in one project).
+* Define automated workflows (Hooks) (e.g., download -> unzip -> reproject -> grid) using Python-based Processing Hooks.
+* Save complex processing chains (Presets) as simple reusable flags (e.g., fetchez ... --run-through-waffles).
+* Includes "FRED" (Fetchez Remote Elevation Datalist) to index and query remote or local files spatially without hitting slow APIs or maintianing a database.
 * Minimal dependencies (`requests`, `tqdm`, `lxml`). Optional `shapely` support for precise spatial filtering.
 * Supports user-defined Data Modules *and* Processing Hooks via `~/.fetchez/`.
 
 ---
 
+## 🧩 Where does Fetchez fit?
+
+The geospatial ecosystem is full of powerful processing engines, translators, tansformers, converters, etc. but they all assume you already have the data ready to use. Fetchez fills the gap between the internet, your hard drive and your workflow.
+
+| Tool | Role | The **Fetchez** Relationship |
+| -- | -- | -- |
+| GDAL / PDAL | The Factory | Fetchez is the Logistics Manager. It locates the raw materials (LAZ/TIF files), handles the shipping (downloading/unzipping), and delivers a clean manifest of local paths directly to GDAL/PDAL for processing. |
+| GeoPandas | The Analyst | Fetchez is the Surveyor. It handles the upstream ETL—crawling APIs and standardizing formats—so you can load a clean GeoDataFrame without writing custom scraping scripts.
+| Wget / Curl| The Courier | Fetchez is the Broker. Unlike simple file downloaders, Fetchez understands Geospatial Context (Bounding Boxes, Datums, Projections) and Repository Logic (Pagination, Token Auth, Directory Structures). |
+
+In short: Use Fetchez to get the data. Use GDAL/PDAL to crunch the data.
 
 ## 📦 Installation
 
