@@ -19,9 +19,9 @@ import base64
 import threading
 import queue
 import netrc
+import io
 import logging
 from tqdm import tqdm
-import urllib.request
 import urllib.parse
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, build_opener, HTTPCookieProcessor
@@ -314,6 +314,67 @@ class iso_xml:
             logger.error('Could not parse polygon from xml')
             return None
 
+
+class HttpFile(io.IOBase):
+    """A file-like object backed by an HTTP URL.
+
+    Translates read() calls into HTTP Range requests to fetch only needed bytes.
+    """
+    
+    def __init__(self, url, session=None, callback=None):
+        self.url = url
+        self.session = session or requests.Session()
+        self.callback = callback
+        self.offset = 0
+        self.size = self._get_size()
+
+        
+    def _get_size(self):
+        resp = self.session.head(self.url)
+        if 'Content-Length' not in resp.headers:
+             return 0 
+        return int(resp.headers['Content-Length'])
+
+    
+    def seek(self, offset, whence=io.SEEK_SET):
+        if whence == io.SEEK_SET:
+            self.offset = offset
+        elif whence == io.SEEK_CUR:
+            self.offset += offset
+        elif whence == io.SEEK_END:
+            self.offset = self.size + offset
+        return self.offset
+
+    
+    def tell(self):
+        return self.offset
+
+    
+    def read(self, size=-1):
+        if size == -1:
+            end = self.size - 1
+        else:
+            end = self.offset + size - 1
+
+        if end >= self.size:
+            end = self.size - 1
+            
+        if self.offset > end:
+            return b""
+
+        # Fetch ONLY the specific bytes requested
+        headers = {"Range": f"bytes={self.offset}-{end}"}
+        response = self.session.get(self.url, headers=headers)
+        response.raise_for_status()
+        
+        data = response.content
+
+        if self.callback:
+            self.callback(len(data))
+        
+        self.offset += len(data)
+        return data
+    
         
 # =============================================================================    
 # Fetch 
@@ -603,7 +664,6 @@ class Fetch:
         """Fetch an ftp file via ftplib with a progress bar."""
         
         import ftplib
-        from urllib.parse import urlparse
 
         status = 0
         logger.info(f'Fetching remote ftp file: {self.url}...')
@@ -616,7 +676,7 @@ class Fetch:
                 pass
 
         try:
-            parsed = urlparse(self.url)
+            parsed = urllib.parse.urlparse(self.url)
             host = parsed.hostname
             path = parsed.path
             username = parsed.username or 'anonymous'

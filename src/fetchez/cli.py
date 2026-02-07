@@ -275,7 +275,7 @@ def init_hooks(hook_list_strs):
             
     return active_instances
 
-        
+
 # =============================================================================
 # Command-line Interface(s) (CLI)
 # =============================================================================
@@ -460,8 +460,14 @@ CUDEM home page: <http://cudem.colorado.edu>
                 current_cmd = module_keys.get(arg, arg)
                 current_args = []
         else:
-            if current_cmd:
+            if current_cmd and current_cmd != 'file':
                 current_args.append(arg)
+            elif os.path.isfile(arg):
+                current_cmd = 'file'
+                if current_args:
+                    current_args[0] += f',{arg}'
+                else:
+                    current_args = [f'--paths={arg}']
 
     if current_cmd:
         commands.append((current_cmd, current_args))

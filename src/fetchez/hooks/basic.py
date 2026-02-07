@@ -213,20 +213,21 @@ class Audit(FetchHook):
             return
 
         try:
+            entry_results = [e for m, e in all_results]
             with open(self.filename, 'w') as f:
                 if self.format == 'json':
-                    json.dump(all_results, f, indent=2)
+                    json.dump(entry_results, f, indent=2)
                     
                 elif self.format == 'csv':
-                    keys = set().union(*(d.keys() for d in all_results))                    
+                    keys = set().union(*(d.keys() for d in entry_results))                    
                     #keys = all_results[0].keys()
                     #writer = csv.DictWriter(f, fieldnames=keys)
                     writer = csv.DictWriter(f, fieldnames=sorted(list(keys)))
                     writer.writeheader()
-                    writer.writerows(all_results)
+                    writer.writerows(entry_results)
                     
                 else:
-                    for res in all_results:
+                    for res in entry_results:
                         status = 'OK' if res.get('status') == 0 else 'FAIL'
                         f.write(f'[{status}] {res.get("dst_fn")} < {res.get("url")}\n')
                         
