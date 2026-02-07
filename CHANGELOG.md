@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Hook system for fetchez! (--list, --inventory, --pipe-path are now hooks)
 - Users can add their own hooks in ~/.fetchez/hooks
+- 'file' module to send local data through hooks
 
 ### Changed
 - groupded parsers in argparse
+- updated pyproject.toml for optional deps.
 
 ### BUGFIX
 - pyproj/pyshp error msg in dav.py

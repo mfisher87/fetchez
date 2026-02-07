@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fetchez"
-version = "0.3.4"
+version = "0.3.6"
 description = "Geo-Spatial Data Fetching"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -31,23 +31,18 @@ dependencies = [
     "shapely",
 ]
 
+keywords = ["Geospatial"]
+
 [project.optional-dependencies]
-# Feature-specific groups
 aws = ["boto3"]
 vector = ["pyshp", "pyproj"]
-gdal = ["gdal"]
+test = ['pytest']
 
-# "Meta" groups that combine others
-full = ["boto3", "pyshp", "pyproj"]
-dev = ["pytest"]
-
-keywords = ["Geospatial"]
+full = ["fetchez[aws,vector]"]
 
 [project.scripts]
 # CLI Entry Points
 fetchez = "fetchez.cli:fetchez_cli"
-#bing_bfp = "fetchez.modules.bingbfp:bing_bfp_cli"
-#osm_coast = "fetchez.modules.osm:osm_coast_cli"
 
 [project.urls]
 Homepage = "https://github.com/ciresdem/fetchez"
