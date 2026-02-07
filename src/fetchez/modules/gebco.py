@@ -56,8 +56,8 @@ class GEBCO(FetchModule):
         
         self.layer = layer.lower()
         
-        if self.layer not in GEBCO_COG_URLS:
-            valid = ", ".join(GEBCO_COG_URLS.keys())
+        if self.layer not in GEBCO_GLOBAL_URLS:
+            valid = ", ".join(GEBCO_GLOBAL_URLS.keys())
             logger.warning(f"Unknown GEBCO layer '{self.layer}'. Defaulting to 'grid'. Valid: {valid}")
             self.layer = 'grid'
 
