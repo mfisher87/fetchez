@@ -12,12 +12,15 @@ Fetch elevation data from The National Map (TNM) API.
 """
 
 import datetime
+import logging
 from typing import Optional, List, Any
 
 from fetchez import core
 from fetchez import utils
 from fetchez import spatial
 from fetchez import cli
+
+logger = logging.getLogger(__name__)
 
 TNM_API_PRODUCTS_URL = 'https://tnmaccess.nationalmap.gov/api/v1/products?'
 
@@ -122,7 +125,7 @@ class TheNationalMap(core.FetchModule):
                 ds_indices = [int(x) for x in self.datasets.split('/')]
                 dataset_names = [DATASET_CODES[i] for i in ds_indices if 0 <= i < len(DATASET_CODES)]
             except (ValueError, IndexError):
-                utils.echo_warning_msg(f"Could not parse datasets '{self.datasets}'. Using default.")
+                logger.warning(f"Could not parse datasets '{self.datasets}'. Using default.")
         
         # Default to NED 1 arc-second if nothing valid selected
         if not dataset_names:
@@ -148,11 +151,11 @@ class TheNationalMap(core.FetchModule):
             req = core.Fetch(TNM_API_PRODUCTS_URL).fetch_req(params=params, timeout=60, read_timeout=60)
             
             if req is None or req.status_code != 200:
-                utils.echo_error_msg(f"TNM API Failed: {req.status_code if req else 'No Response'}")
+                logger.error(f"TNM API Failed: {req.status_code if req else 'No Response'}")
                 break
 
             if req.text.strip().startswith("{errorMessage"):
-                utils.echo_error_msg(f"TNM API Error: {req.text}")
+                logger.error(f"TNM API Error: {req.text}")
                 break
             
             try:
@@ -189,7 +192,7 @@ class TheNationalMap(core.FetchModule):
                     )
 
             except Exception as e:
-                utils.echo_error_msg(f"Error parsing TNM JSON: {e}")
+                logger.error(f"Error parsing TNM JSON: {e}")
                 break
 
             offset += 100
@@ -206,7 +209,6 @@ class TheNationalMap(core.FetchModule):
     help_text="National Elevation Dataset (NED) / 3DEP DEMs",
     res="Resolution: '13' (Default: 1 & 1/3 arc-sec), '1m' (1-meter), '1', '1/3', or 'all'"
 )
-
 class NED(TheNationalMap):
     """
     Shortcut for fetching USGS NED / 3DEP DEMs at various resolutions.

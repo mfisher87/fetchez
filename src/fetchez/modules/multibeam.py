@@ -108,16 +108,19 @@ class Multibeam(core.FetchModule):
         
     def check_for_generated_data(self, base_url: str) -> bool:
         """Check if a 'generated' directory exists for processed data."""
-        
-        #req = core.Fetch(base_url).fetch_req()
-        #if req is None or req.status_code == 404:
-        parts = base_url.split('/')
-        parts.insert(-1, 'generated')
-        gen_url = '/'.join(parts)
-        response = requests.head(gen_url, timeout=5, allow_redirects=True)
-        if response is not None and response.status_code in [200, 302]:
-            return True
-        return False
+
+        try:
+            #req = core.Fetch(base_url).fetch_req()
+            #if req is None or req.status_code == 404:
+            parts = base_url.split('/')
+            parts.insert(-1, 'generated')
+            gen_url = '/'.join(parts)
+            response = requests.head(gen_url, timeout=5, allow_redirects=True)
+            if response is not None and response.status_code in [200, 302]:
+                return True
+            return False
+        except:
+            return False
 
     
     def run(self):
@@ -190,7 +193,6 @@ class Multibeam(core.FetchModule):
 
         logger.info(f"Found {len(surveys_found)} relevant surveys.")
 
-        # Process Survey List
         with tqdm(total=len(surveys_found), desc='Scanning multibeam files...', leave=False) as pbar:
             for survey, data in surveys_found.items():
                 versions = data['versions']            
@@ -210,7 +212,6 @@ class Multibeam(core.FetchModule):
                 if not file_list: continue
 
                 # Check for 'generated' directory (often holds the actual processed grids/data)
-
                 use_generated = self.check_for_generated_data(file_list[0][0])
 
                 final_files = []
