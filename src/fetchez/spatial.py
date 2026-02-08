@@ -6,7 +6,7 @@ fetchez.spatial
 ~~~~~~~~~~~~~~~~
 
 Lightweight spatial utilities for parsing region strings and files into 
-standard bounding boxes. Based on cudem.regions
+standard bounding boxes. Adaptded from CUDEM.
 
 :copyright: (c) 2012 - 2026 CIRES Coastal DEM Team
 :license: MIT, see LICENSE for more details.
@@ -16,7 +16,7 @@ import os
 import json
 import math
 import logging
-from typing import Union, List, Tuple, Optional
+from typing import Union, List, Tuple, Optional, Any
 
 try:
     from shapely.geometry import shape, box, mapping
@@ -36,66 +36,236 @@ def region_help_msg():
     """
 
 # =============================================================================
-# Argument Pre-processing to account for negative coordinates at the
-# beginning of the region. argparse otherwise would think it was a new
-# argument; breaking the sometimes prefered syntax.
+# The Region Class
 # =============================================================================
-def fix_argparse_region(raw_argv):
-    fixed_argv = []
-    i = 0
-    while i < len(raw_argv):
-        arg = raw_argv[i]
-        
-        ## Check if this is a region flag and there is a next argument
-        if arg in ['-R', '--region', '--aoi'] and i + 1 < len(raw_argv):
-            next_arg = raw_argv[i+1]
-            if next_arg.startswith('-'):
-                if arg == '-R':
-                    fixed_argv.append(f"{arg}{next_arg}")
-                else:
-                    fixed_argv.append(f"{arg}={next_arg}")
-                i += 2
-                continue
-
-        fixed_argv.append(arg)
-        i += 1
-    return fixed_argv
-
-
-def region_from_string(r_str: str) -> Optional[Tuple[float, float, float, float]]:
-    """Parse a standard GMT-style region string (e.g. -R-105/-104/39/40)."""
+class Region:
+    """A geospatial bounding box object.
     
-    if not r_str: return None
-        
-    if r_str.startswith('-R'):
-        r_str = r_str[2:]
-    elif r_str.startswith('--region='):
-        r_str = r_str.split('=')[1]
-        
-    parts = r_str.split('/')
-    if len(parts) < 4: return None
-        
-    try:
-        return tuple(float(x) for x in parts[:4])
-    except ValueError:
-        return None
-
-    
-def region_from_list(r_list: List[float]) -> Optional[Tuple[float, float, float, float]]:
-    """Convert a list of 4 numbers to a bounding box tuple.
-
-    The order should be [w, e, s, n]
+    Behaves like a tuple (xmin, xmax, ymin, ymax) for backward compatibility,
+    but provides methods for manipulation and format conversion.
     """
     
-    if len(r_list) < 4: return None
-    try:
-        return (float(r_list[0]), float(r_list[1]), float(r_list[2]), float(r_list[3]))
-    except (ValueError, TypeError):
-        return None
+    def __init__(self, w=None, e=None, s=None, n=None, srs=None):
+        self.xmin = float(w) if w is not None else None
+        self.xmax = float(e) if e is not None else None
+        self.ymin = float(s) if s is not None else None
+        self.ymax = float(n) if n is not None else None
+        self.srs = srs  # Placeholder for EPSG/WKT string (used by transformez/dlim)
+
+        
+    # --- Tuple Compatibility Interface ---
+    def __iter__(self):
+        """Unpacks as: w, e, s, n = region"""
+        
+        yield self.xmin
+        yield self.xmax
+        yield self.ymin
+        yield self.ymax
+
+        
+    def __getitem__(self, index):
+        """Allows indexing: region[0]"""
+        
+        return [self.xmin, self.xmax, self.ymin, self.ymax][index]
 
     
-def region_from_geojson(fn: str) -> Optional[Tuple[float, float, float, float]]:
-    """Parse the bounding box of a GeoJSON file."""
+    def __len__(self):
+        """Allows len(region), always returns 4."""
+        
+        return 4
+
+    
+    def __repr__(self):
+        srs_str = f", srs='{self.srs}'" if self.srs else ""
+        return f"Region({self.xmin}, {self.xmax}, {self.ymin}, {self.ymax}{srs_str})"
+
+    
+    def __eq__(self, other):
+        if isinstance(other, (list, tuple)) and len(other) == 4:
+            return list(self) == list(other)
+        if isinstance(other, Region):
+            return (self.xmin == other.xmin and self.xmax == other.xmax and 
+                    self.ymin == other.ymin and self.ymax == other.ymax)
+        return False
+
+    
+    # --- Properties ---
+    @property
+    def w(self): return self.xmin
+    @property
+    def e(self): return self.xmax
+    @property
+    def s(self): return self.ymin
+    @property
+    def n(self): return self.ymax
+    
+    @property
+    def width(self): return abs(self.xmax - self.xmin) if self.valid_p() else 0
+    @property
+    def height(self): return abs(self.ymax - self.ymin) if self.valid_p() else 0
+
+    
+    # --- Validation ---
+    def valid_p(self, check_xy: bool = True) -> bool:
+        """Check if region is valid."""
+        
+        if None in [self.xmin, self.xmax, self.ymin, self.ymax]:
+            return False
+        
+        try:
+            if check_xy:
+                if self.xmin >= self.xmax: return False
+                if self.ymin >= self.ymax: return False
+            else:
+                if self.xmin > self.xmax: return False
+                if self.ymin > self.ymax: return False
+        except (ValueError, TypeError):
+            return False
+        return True
+
+    
+    # --- Manipulation ---
+    def copy(self):
+        return Region(self.xmin, self.xmax, self.ymin, self.ymax, srs=self.srs)
+
+    
+    def buffer(self, pct: float = 5, x_bv: float = None, y_bv: float = None):
+        """Buffer the region in place."""
+        
+        if not self.valid_p(check_xy=False): return self
+
+        if x_bv is None and y_bv is None:
+            x_span = self.xmax - self.xmin
+            y_span = self.ymax - self.ymin
+            x_bv = x_span * (pct / 100.0)
+            y_bv = y_span * (pct / 100.0)
+            # Average buffer if not specified separately
+            avg_buf = (x_bv + y_bv) / 2.0
+            x_bv = avg_buf
+            y_bv = avg_buf
+        
+        x_bv = x_bv if x_bv else 0
+        y_bv = y_bv if y_bv else 0
+
+        self.xmin -= x_bv
+        self.xmax += x_bv
+        self.ymin -= y_bv
+        self.ymax += y_bv
+        return self
+
+    
+    def center(self):
+        """Return center (x, y)."""
+        
+        if not self.valid_p(check_xy=False): return (None, None)
+        return ((self.xmin + self.xmax) / 2.0, (self.ymin + self.ymax) / 2.0)
+
+    
+    def chunk(self, chunk_size: float = 1.0) -> List['Region']:
+        """Split into smaller sub-regions."""
+        
+        if not self.valid_p(): return []
+        
+        chunks = []
+        cur_w = self.xmin
+        while cur_w < self.xmax:
+            next_w = cur_w + chunk_size
+            if next_w > self.xmax: next_w = self.xmax
+            
+            cur_s = self.ymin
+            while cur_s < self.ymax:
+                next_s = cur_s + chunk_size
+                if next_s > self.ymax: next_s = self.ymax
+                
+                # Check for tiny slivers
+                if (next_w - cur_w > 1e-9) and (next_s - cur_s > 1e-9):
+                    chunks.append(Region(cur_w, next_w, cur_s, next_s, srs=self.srs))
+                
+                cur_s = next_s
+            cur_w = next_w
+        return chunks
+
+    
+    # --- Export Formats ---
+    def to_bbox(self):
+        """Export as standard (w, s, e, n) bbox used by many GIS tools."""
+        
+        return (self.xmin, self.ymin, self.xmax, self.ymax)
+
+    
+    def to_list(self):
+        """Export as [w, e, s, n] list."""
+        
+        return [self.xmin, self.xmax, self.ymin, self.ymax]
+
+    
+    def format(self, style='gmt'):
+        """String representation."""
+        
+        if style == 'gmt':
+            return f"-R{self.xmin}/{self.xmax}/{self.ymin}/{self.ymax}"
+        elif style == 'bbox':
+            return f"{self.xmin},{self.ymin},{self.xmax},{self.ymax}"
+        elif style == 'fn':
+            # filename safe string
+            return f"w{self.xmin}_e{self.xmax}_s{self.ymin}_n{self.ymax}".replace('.', 'p').replace('-', 'n')
+        return str(self)
+
+    
+    def to_shapely(self):
+        if not HAS_SHAPELY: return None
+        return box(self.xmin, self.ymin, self.xmax, self.ymax)
+
+    
+    def to_wkt(self):
+        if HAS_SHAPELY:
+            return self.to_shapely().wkt
+        else:
+            # Simple fallback WKT
+            return (f"POLYGON (({self.xmin} {self.ymin}, {self.xmin} {self.ymax}, "
+                    f"{self.xmax} {self.ymax}, {self.xmax} {self.ymin}, "
+                    f"{self.xmin} {self.ymin}))")
+
+        
+    def to_geojson_geometry(self):
+        return {
+            'type': 'Polygon',
+            'coordinates': [[
+                [self.xmin, self.ymin],
+                [self.xmin, self.ymax],
+                [self.xmax, self.ymax],
+                [self.xmax, self.ymin],
+                [self.xmin, self.ymin]
+            ]]
+        }
+
+    
+    # --- Constructors ---
+    @classmethod
+    def from_list(cls, r_list):
+        if len(r_list) < 4: return None
+        return cls(r_list[0], r_list[1], r_list[2], r_list[3])
+
+    
+    @classmethod
+    def from_string(cls, r_str):
+        if not r_str: return None
+        if r_str.startswith('-R'): r_str = r_str[2:]
+        elif r_str.startswith('--region='): r_str = r_str.split('=')[1]
+        
+        parts = r_str.split('/')
+        if len(parts) < 4: return None
+        try:
+            return cls(*[float(x) for x in parts[:4]])
+        except ValueError:
+            return None
+
+        
+# =============================================================================
+# Helper / Parser Functions
+# =============================================================================
+def region_from_geojson(fn: str) -> Optional[List[Region]]:
+    """Parse the bounding box(es) of a GeoJSON file."""
     
     if not os.path.exists(fn): return None
     regions = []
@@ -104,7 +274,6 @@ def region_from_geojson(fn: str) -> Optional[Tuple[float, float, float, float]]:
             data = json.load(f)
         
         features = data.get('features', [data])
-        
         min_x, min_y = float('inf'), float('inf')
         max_x, max_y = float('-inf'), float('-inf')
         valid = False
@@ -115,299 +284,121 @@ def region_from_geojson(fn: str) -> Optional[Tuple[float, float, float, float]]:
             
             if HAS_SHAPELY:
                 b = shape(geom).bounds # (minx, miny, maxx, maxy)
-                min_x = min(min_x, b[0])
-                min_y = min(min_y, b[1])
-                max_x = max(max_x, b[2])
-                max_y = max(max_y, b[3])
+                min_x, min_y = min(min_x, b[0]), min(min_y, b[1])
+                max_x, max_y = max(max_x, b[2]), max(max_y, b[3])
                 valid = True
-            else:
-                pass
+            
+            # Simple fallback for Polygon geometry if no shapely
+            elif geom.get('type') == 'Polygon':
+                coords = geom.get('coordinates', [])[0]
+                xs = [c[0] for c in coords]
+                ys = [c[1] for c in coords]
+                min_x, min_y = min(min_x, min(xs)), min(min_y, min(ys))
+                max_x, max_y = max(max_x, max(xs)), max(max_y, max(ys))
+                valid = True
 
-            if valid:
-                regions.append((min_x, max_x, min_y, max_y))
-        if regions:
+        if valid:
+            # We return a list containing the union bbox for now
+            regions.append(Region(min_x, max_x, min_y, max_y))
             return regions
     except Exception as e:
         logger.warning(f'Failed to parse GeoJSON {fn}: {e}')
-        
     return None
 
 
-def region_from_place(query: str, centered: bool=True) -> Optional[Tuple[float, float, float, float]]:
+def region_from_place(query: str, centered: bool=True) -> Optional[Region]:
     """Resolve 'loc:PlaceName' to a bounding box."""
     
     from .modules.nominatim import Nominatim
-    
     clean_q = query.split(':', 1)[1] if ':' in query else query
-    
     nom = Nominatim(query=clean_q)
     nom.run()
     
     if nom.results:
         res = nom.results[0]
-        x = res.get('x')
-        y = res.get('y')
+        x, y = res.get('x'), res.get('y')
+        if x is None or y is None: return None
 
         if centered:
-            if x is not None and y is not None:
-                # region is centered on place
-                x_min = x - .125
-                x_max = x + .125
-                y_min = y - .125
-                y_max = y + .125
-                return (x_min, x_max, y_min, y_max)
-
+            return Region(x-.125, x+.125, y-.125, y+.125)
         else:
-            if x is not None and y is not None:
-                # Snap to 0.25 degree grid
-                x_min = math.floor(x * 4) / 4
-                x_max = math.ceil(x * 4) / 4
-                y_min = math.floor(y * 4) / 4
-                y_max = math.ceil(y * 4) / 4
-                return (x_min, x_max, y_min, y_max)
-            
+            x_min = math.floor(x * 4) / 4
+            x_max = math.ceil(x * 4) / 4
+            y_min = math.floor(y * 4) / 4
+            y_max = math.ceil(y * 4) / 4
+            return Region(x_min, x_max, y_min, y_max)
     return None
 
 
-def _coordinate_list_p(lst: List) -> bool:
-    """Check if a list looks like [x, x, y, y]."""
-    
-    if len(lst) != 4: 
-        return False
-    try:
-        # Check if all items can be cast to float
-        [float(x) for x in lst]
-        return True
-    except (ValueError, TypeError):
-        return False
-
-_is_coordinate_list = _coordinate_list_p
-
-
-def parse_single_string(s: str) -> Optional[Tuple[float, float, float, float]]:
-    """Parse a single string (presumably a representation of a region) input."""
-    
-    s_lower = s.lower()
-    
-    # File Paths
-    if s_lower.endswith('.json') or s_lower.endswith('.geojson'):
-        return region_from_geojson(s)
-        
-    # Place Names
-    if s_lower.startswith(('loc:', 'place:')):
-        return region_from_place(s)
-        
-    # Standard String (-R...)
-    return region_from_string(s)
-
-
-def parse_region(input_r: Union[str, List]) -> List[Tuple[float, float, float, float]]:
-    """Main function to parse any region input into a list of (xmin, xmax, ymin, ymax) tuples.
-    
-    Returns:
-        List[Tuple]: A list of bounding boxes. Returns empty list if parsing fails.
-    """
+def parse_region(input_r: Union[str, List]) -> List[Region]:
+    """Main function to parse region input into a list of Region objects."""
     
     regions = []
-    # Single String
+    
+    # 1. Single String
     if isinstance(input_r, str):
-        r = parse_single_string(input_r)
-        if r:
-            if isinstance(r, tuple):
-                regions.append(r)
-            elif isinstance(r, list):
-                regions.extend(r)
-        return regions
-
-    # Lists (could be coords OR list of identifier strings)
-    if isinstance(input_r, (list, tuple)):
-        
-        # Check if it is a single Coordinate List [x, x, y, y]
-        if _coordinate_list_p(input_r):
-            r = region_from_list(input_r)
+        s_lower = input_r.lower()
+        if s_lower.endswith(('.json', '.geojson')):
+            rs = region_from_geojson(input_r)
+            if rs: regions.extend(rs)
+        elif s_lower.startswith(('loc:', 'place:')):
+            r = region_from_place(input_r)
             if r: regions.append(r)
-        
-        # Otherwise, treat as a list of independent region strings
         else:
+            r = Region.from_string(input_r)
+            if r: regions.append(r)
+            
+    # 2. List/Tuple (Coordinate list OR List of strings)
+    elif isinstance(input_r, (list, tuple)):
+        # Check if it is a single Coordinate List [w, e, s, n]
+        if len(input_r) == 4 and all(isinstance(n, (int, float)) for n in input_r):
+            regions.append(Region.from_list(input_r))
+        else:
+            # Recursive parse for list of identifiers
             for item in input_r:
-                if isinstance(item, str):
-                    r = parse_single_string(item)
-                    if r:
-                        if isinstance(r, tuple):
-                            regions.append(r)
-                        elif isinstance(r, list):
-                            regions.extend(r)
-                elif isinstance(item, (list, tuple)) and _coordinate_list_p(item):
-                    r = region_from_list(item)
-                    if r: regions.append(r)
+                regions.extend(parse_region(item))
 
     if not regions:
-        logger.warning(f'Failed to parse region {input_r}')
+        # Don't warn on None input, only on failed parse of actual input
+        if input_r is not None:
+            logger.warning(f'Failed to parse region {input_r}')
+            
     return regions
 
 
-def region_valid_p(region: Optional[Tuple[float, float, float, float]], check_xy: bool = True) -> bool:
-    """Check if a region tuple is valid.
+# =============================================================================
+# Legacy / CLI Helper Functions
+# =============================================================================
+def fix_argparse_region(raw_argv):
+    """Argument Pre-processing for negative coordinates."""
     
-    A region is considered valid if:
-    1. It is a list or tuple of exactly 4 numbers.
-    2. xmin < xmax
-    3. ymin < ymax
+    fixed_argv = []
+    i = 0
+    while i < len(raw_argv):
+        arg = raw_argv[i]
+        if arg in ['-R', '--region', '--aoi'] and i + 1 < len(raw_argv):
+            next_arg = raw_argv[i+1]
+            if next_arg.startswith('-'):
+                sep = '' if arg == '-R' else '='
+                fixed_argv.append(f"{arg}{sep}{next_arg}")
+                i += 2
+                continue
+        fixed_argv.append(arg)
+        i += 1
+    return fixed_argv
+
+
+def region_valid_p(region, check_xy=True):
+    """Legacy wrapper for validity check."""
     
-    Args:
-        region: The region tuple (xmin, xmax, ymin, ymax).
-        check_xy: If True, enforces strict inequality (min < max). 
-                  If False, allows points/lines (min <= max).
-    
-    Returns:
-        bool: True if valid, False otherwise.
-    """
-    
-    if region is None:
-        return False
-        
-    if not isinstance(region, (list, tuple)) or len(region) < 4:
-        return False
-        
-    try:
-        xmin, xmax, ymin, ymax = map(float, region[:4])
-    except (ValueError, TypeError):
-        return False
-
-    if check_xy:
-        if xmin >= xmax:
-            return False
-        if ymin >= ymax:
-            return False
-    else:
-        if xmin > xmax:
-            return False
-        if ymin > ymax:
-            return False
-            
-    return True
-
-region_is_valid = region_valid_p
+    if isinstance(region, Region):
+        return region.valid_p(check_xy)
+    # Handle tuples via temporary Region object
+    return Region.from_list(region).valid_p(check_xy) if region else False
 
 
-def buffer_region(bbox: Tuple, pct: float = 5) -> Tuple[float, float, float, float]:
-    """Apply a percentage buffer to a bounding box."""
-    
-    if not bbox: return None
-    
-    xmin, xmax, ymin, ymax = bbox
-    x_span = xmax - xmin
-    y_span = ymax - ymin
-    
-    buf_x = x_span * (pct / 100.0)
-    buf_y = y_span * (pct / 100.0)
-    avg_buf = (buf_x + buf_y) / 2.0
-    
-    return (xmin - avg_buf, xmax + avg_buf, ymin - avg_buf, ymax + avg_buf)
-
-
-def region_center(region: Tuple[float, float, float, float]):
-    """Calculate the center of a region."""
-
-    w, e, s, n = region
-    center_lon = (w + e) / 2
-    center_lat = (s + n) / 2
-
-    return center_lon, center_lat
-
-
-def region_to_shapely(region: Tuple[float, float, float, float]):
-    """Convert a fetchez region (xmin, xmax, ymin, ymax) to a shapely box.
-    
-    fetchez regions are like GMT: (west, east, south, north) while
-    shapely regions are not: (minx, miny, maxx, maxy)
-    """
-    
-    if not region or not HAS_SHAPELY:
-        return None
-        
-    west, east, south, north = region
-    return box(west, south, east, north)
-
-
-def region_to_wkt(region: Tuple[float, float, float, float]):
-    """Convert a fetchez region (xmin, xmax, ymin, ymax) to WKT (via shapely)"""
-
-    polygon = region_to_shapely(region)
-    return polygon.wkt
-
-
-def region_to_bbox(region: Tuple[float, float, float, float]):
-    """Convert a fetchez region to a `bbox`"""
-
-    w, e, s, n = region
-    return (w, s, e, n)
-
-
-def region_to_geojson_geom(region: Tuple[float, float, float, float]):
-    w, e, s, n = region
-    # geom = {
-    #     "type": "Polygon",
-    #     "coordinates": [[
-    #         [w, s], [e, s], [e, n], [w, n], [w, s]
-    #     ]]
-    # }
-
-    return {
-        'type': 'Polygon',
-        'coordinates': [[
-            [w, s],
-            [w, n],
-            [e, n],
-            [e, s],
-            [w, s]
-        ]]
-    }
-
-
-def chunk_region(region: Tuple[float, float, float, float], chunk_size: float = 1.0) -> List[Tuple[float, float, float, float]]:
-    """Split a region into smaller sub-regions of a specified size.
-    
-    Args:
-        region: Tuple (west, east, south, north)
-        chunk_size: Size of the square chunks in degrees (or region units).
-        
-    Returns:
-        List of (w, e, s, n) tuples.
-    """
-    
-    w, e, s, n = region
-    
-    chunks = []
-    
-    cur_w = w
-    while cur_w < e:
-        next_w = cur_w + chunk_size
-        if next_w > e:
-            next_w = e
-            
-        cur_s = s
-        while cur_s < n:
-            next_s = cur_s + chunk_size
-            if next_s > n:
-                next_s = n
-                
-            if (next_w - cur_w > 1e-9) and (next_s - cur_s > 1e-9):
-                chunks.append((cur_w, next_w, cur_s, next_s))
-                
-            cur_s = next_s
-            
-        cur_w = next_w
-        
-    return chunks
-
-
-def region_and_inc_to_width_height(region, increment):
-    inc_val = utils.str2inc(increment) if isinstance(increment, str) else increment
-    
-    width = region[1] - region[0]
-    height = region[3] - region[2]
-    nx = int(width / inc_val) + 1
-    ny = int(height / inc_val) + 1
-    
-    return nx, ny
+# Backwards compatibility aliases
+region_from_list = Region.from_list
+region_from_string = Region.from_string
+chunk_region = lambda r, s=1.0: Region.from_list(r).chunk(s) if r else []
+buffer_region = lambda r, p=5: Region.from_list(r).buffer(p) if r else None

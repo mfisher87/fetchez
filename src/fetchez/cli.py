@@ -355,10 +355,10 @@ CUDEM home page: <http://cudem.colorado.edu>
 
     check_size = not global_args.no_check_size
     
-    #level = logging.WARNING if global_args.quiet else logging.INFO
+    level = logging.WARNING if global_args.quiet else logging.INFO
     # I like sending logging to stderr, and anyway we want this with --pipe-path
-    #logging.basicConfig(level=level, format='[ %(levelname)s ] %(name)s: %(message)s', stream=sys.stderr)
-    setup_logging(not global_args.quiet) # this prevents logging from distorting tqdm and leaving partial tqdm bars everywhere...
+    logging.basicConfig(level=level, format='[ %(levelname)s ] %(name)s: %(message)s', stream=sys.stderr)
+    #setup_logging(not global_args.quiet) # this prevents logging from distorting tqdm and leaving partial tqdm bars everywhere...
     
     if global_args.init_presets:
         presets.init_presets()
