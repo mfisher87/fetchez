@@ -144,7 +144,7 @@ class VDatum(core.FetchModule):
                 dst_fn=os.path.basename(r['DataLink']),
                 data_type=r['DataType'],
                 agency='NOAA',
-                title=f'VDatum Grid ({r['ID']})'
+                title=f'VDatum Grid ({r["ID"]})'
             )
             
         return self
