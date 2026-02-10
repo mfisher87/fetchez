@@ -857,9 +857,12 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3, global_hooks=Non
       - mod.hooks: Run ONLY on entries belonging to 'mod'.
       - global_hooks: Run on ALL entries combined.
     """
+    
     STOP_EVENT.clear()
     if global_hooks is None: global_hooks = []
 
+    silent = logger.getEffectiveLevel() > logging.INFO
+    
     for mod in modules:
         mod_pre = [h for h in mod.hooks if h.stage == 'pre']
         if not mod_pre:
@@ -906,7 +909,7 @@ def run_fetchez(modules: List['FetchModule'], threads: int = 3, global_hooks=Non
                 for mod, entry in all_entries
             }
             
-            with tqdm(total=total_files, unit='file', desc='Fetching', position=0, leave=True) as pbar:
+            with tqdm(total=total_files, unit='file', desc='Fetching', position=0, leave=False, disable=silent) as pbar:
                 for future in concurrent.futures.as_completed(futures):
                     mod, original_entry = futures[future]
                     
