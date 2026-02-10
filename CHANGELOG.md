@@ -7,12 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- hook categories
-- some utils/region functionality from cudem
-
-	
-## [0.4.0] - 2026-02-09
-### Added
 - Hook system for fetchez! (--list, --inventory, --pipe-path are now hooks)
 - Users can add their own hooks in ~/.fetchez/hooks
 - 'file' module to send local data through hooks
