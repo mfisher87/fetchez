@@ -283,7 +283,7 @@ def fetchez_cli():
     """Run fetchez from command-line using argparse."""
 
     # Check if first arg exists and ends in .json or yaml. -- project file --
-    if len(sys.argv) > 1 and sys.argv[1].endswith('.json') and os.path.isfile(sys.argv[1]):
+    if len(sys.argv) > 1 and (sys.argv[1].endswith('.json') or sys.argv[1].endswith('.yaml')) and os.path.isfile(sys.argv[1]):
         from . import project
         
         logging.basicConfig(level=logging.INFO, format='[ %(levelname)s ] %(name)s: %(message)s', stream=sys.stderr)
