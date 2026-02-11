@@ -543,7 +543,8 @@ CUDEM home page: <http://cudem.colorado.edu>
             formatter_class=argparse.RawTextHelpFormatter
         )
         mod_parser.add_argument('--mod-hook', action='append', help=f'Add a hook for {mod_key} only.')
-        
+        mod_parser.add_argument('--weight', type=float, default=1, metavar='W', help=f'Add a hook for {mod_key} only.')
+
         active_presets = getattr(mod_cls, 'presets', {}).copy()
         active_presets.update(presets.get_module_presets(mod_key))
         if mod_key in user_mod_presets:
@@ -573,7 +574,8 @@ CUDEM home page: <http://cudem.colorado.edu>
         else:
             mod_kwargs['hook'] = []
 
-        del mod_kwargs['mod_hook'] 
+        del mod_kwargs['mod_hook']
+
         for pname, pdef in active_presets.items():
             arg_attr = pname.replace('-', '_')
             if getattr(mod_args_ns, arg_attr, False):

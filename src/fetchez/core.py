@@ -1027,6 +1027,8 @@ class FetchModule:
             name='fetches',
             min_year=None,
             max_year=None,
+            weight=1.0,
+            uncertainty=0.0,
             params={},
             **kwargs,
     ):
@@ -1049,6 +1051,9 @@ class FetchModule:
         self.internal_hooks = []
         self.external_hooks = hook if hook else []
 
+        self.weight = float(weight)
+        self.uncertainty = float(uncertainty)
+        
         presets = {} 
         
         # Example structure:
