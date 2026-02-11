@@ -5,8 +5,7 @@
 fetchez.project
 ~~~~~~~~~~~~~
 
-Execute declarative ETL workflows defined in JSON or YAML files.
-
+Execute Project workflows defined in JSON or YAML files.
 
 :copyright: (c) 2010-2026 Regents of the University of Colorado
 :license: MIT, see LICENSE for more details.
@@ -65,8 +64,8 @@ class ProjectRun:
             kwargs = h.get('args', {})
             
             for k, v in kwargs.items():
-                if isinstance(v, str) and k in ['file', 'output', 'output_grid', 'mask_fn', 'dem']:
-                    if not os.path.isabs(v) and not v.startswith(('http', 's3://', 'gs://')):
+                if isinstance(v, str):# and k in ['file', 'output', 'output_grid', 'mask_fn', 'dem']:
+                    if not os.path.isabs(v) and not v.startswith(('http', 's3://', 'gs://', 'ftp://')):
                         if '.' in os.path.basename(v) or os.sep in v:
                             kwargs[k] = os.path.abspath(os.path.join(self.base_dir, v))
 
