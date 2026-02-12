@@ -14,7 +14,7 @@ This module contains the Module Registry for the Fetchez library.
 import logging
 import importlib
 import copy
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, cast
 
 logger = logging.getLogger(__name__)
 
@@ -834,7 +834,7 @@ class FetchezRegistry:
         if mod_key not in cls._modules:
             return {}
 
-        entry: Dict[Any, Any] = cls._modules[mod_key]
+        entry: Dict[Any, Any] = cast(Dict[Any, Any], cls._modules[mod_key])
         
         if 'inherits' in entry:
             parent_key = entry['inherits']
