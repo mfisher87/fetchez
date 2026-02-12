@@ -64,12 +64,12 @@ class DAV(core.FetchModule):
     
     def __init__(
             self,
-            survey_id: str = None,
-            datatype: str = 'lidar',
+            survey_id: Optional[str] = None,
+            datatype: Optional[str] = 'lidar',
             title_filter: Optional[str] = None,
             want_footprints: bool = False,
             keep_footprints: bool = False,
-            name='dav',
+            name: Optional[str] = 'dav',
             **kwargs
     ):
         super().__init__(name=name, **kwargs)
@@ -94,7 +94,7 @@ class DAV(core.FetchModule):
         return f"SRID=4269;{poly}"
 
     
-    def _get_features(self) -> List[Dict]:
+    def _get_features(self) -> List[Dict[Any, Any]]:
         """Query the DAV API for missions in the region."""
         
         if self.region is None:
@@ -123,8 +123,8 @@ class DAV(core.FetchModule):
             r.raise_for_status()
             response = r.json()
             return response.get('data', {})
-        except Exception as e:
-            logger.error(f'DAV API Query Error: {e}')
+        except Exception as exception:
+            logger.error(f'DAV API Query Error: {exception}')
             return {}
 
         
@@ -200,8 +200,8 @@ class DAV(core.FetchModule):
                 target_crs = CRS.from_wkt(wkt_text)
             else:
                 target_crs = CRS.from_epsg(4269)
-        except Exception as e:
-            logger.warning(f'Could not parse PRJ, assuming WGS84: {e}')
+        except Exception as exception:
+            logger.warning(f'Could not parse PRJ, assuming WGS84: {exception}')
             target_crs = CRS.from_epsg(4326)
 
         w, e, s, n = self.region
