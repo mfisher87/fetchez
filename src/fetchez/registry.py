@@ -14,6 +14,7 @@ This module contains the Module Registry for the Fetchez library.
 import logging
 import importlib
 import copy
+from typing import List, Dict, Optional, Any
 
 logger = logging.getLogger(__name__)
 
