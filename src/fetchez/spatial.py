@@ -51,7 +51,7 @@ class Region:
         self.srs = srs  # Placeholder for EPSG/WKT string (used by transformez/dlim)
 
         
-    # --- Tuple Compatibility Interface ---
+    # --- Tuple Compatibility  ---
     def __iter__(self):
         """Unpacks as: w, e, s, n = region"""
         
@@ -127,7 +127,7 @@ class Region:
         return Region(self.xmin, self.xmax, self.ymin, self.ymax, srs=self.srs)
 
     
-    def buffer(self, pct: float = 5, x_bv: float = None, y_bv: float = None):
+    def buffer(self, pct: float = 5, x_bv: float | None = None, y_bv: float | None = None):
         """Buffer the region in place."""
         
         if not self.valid_p(check_xy=False): return self
