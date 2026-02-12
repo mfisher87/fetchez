@@ -37,7 +37,7 @@ Geospatial data access is fragmented. You often need one script to scrape a webs
 
 ---
 
-## 🧩Where does Fetchez fit?
+## 🧩 Where does Fetchez fit?
 
 The geospatial ecosystem is full of powerful processing engines, translators, tansformers, converters, etc. but they all assume you already have the data ready to use. Fetchez fills the gap between the internet, your hard drive and your workflow.
 
