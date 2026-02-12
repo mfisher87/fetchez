@@ -826,7 +826,7 @@ class FetchezRegistry:
         """
         
         if mod_key not in cls._modules:
-            for k, v in cls._modules.items():
+            for k, v in cast(Dict[Any, Any], cls._modules.items()):
                 if mod_key in v.get('aliases', []):
                     mod_key = k
                     break
