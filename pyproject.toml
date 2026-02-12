@@ -41,6 +41,13 @@ test = ['pytest']
 
 full = ["fetchez[aws,vector]"]
 
+[dependency-groups]
+dev = [
+  "mypy",
+  "types-requests>=2.31.0.6",
+  "types-tqdm>=4.67.0.20241221",
+]
+
 [project.scripts]
 # CLI Entry Points
 fetchez = "fetchez.cli:fetchez_cli"
@@ -61,3 +68,24 @@ namespaces = false
 # Keys are package names. Values are globs relative to that package root.
 # Example: src/fetchez/data/*.geojson -> "data/*.geojson"
 fetchez = ["data/*.geojson"]
+
+[tool.mypy]
+mypy_path = "src"
+packages = ["fetchez"]
+python_version = "3.12"
+# strict = true
+
+[[tool.mypy.overrides]]
+module = [
+    "shapely.*",
+    "lxml.*",
+    "boto3",
+    "botocore.*",
+    "mercantile",
+    "osgeo",
+    "pyproj",
+    "sentinelsat",
+    "shapefile",
+    "yaml",
+]
+ignore_missing_imports = true
