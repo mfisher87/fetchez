@@ -16,6 +16,7 @@ import sys
 import logging
 import argparse
 import inspect
+import signal
 from typing import Dict, Optional, Any
 
 from . import utils
@@ -312,6 +313,12 @@ def init_hooks(hook_list_strs):
 # =============================================================================
 def fetchez_cli():
     """Run fetchez from command-line using argparse."""
+
+    try:
+        signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+    except AttributeError:
+        # Windows does not strictly support SIGPIPE in the same way
+        pass
 
     # Check if first arg exists and ends in .json or yaml. -- project file --
     if (
@@ -754,7 +761,7 @@ CUDEM home page: <http://cudem.colorado.edu>
                 if count > 0:
                     active_modules.append(x_f)
 
-            except (KeyboardInterrupt, SystemExit):
+            except (KeyboardInterrupt, SystemExit, BrokenPipeError):
                 logger.error("User interruption.")
                 sys.exit(-1)
             except Exception:
