@@ -137,9 +137,13 @@ def get_userpass(authenticator_url: str) -> Tuple[Optional[str], Optional[str]]:
 
     try:
         info = netrc.netrc()
-        username, _, password = info.authenticators(
-            urllib.parse.urlparse(authenticator_url).hostname
-        )
+        if info is not None:
+            username, _, password = info.authenticators(
+                urllib.parse.urlparse(authenticator_url).hostname
+            )
+        else:
+            username = None
+            password = None
     except Exception as e:
         if "No such file" not in str(e):
             logger.error(f"Failed to parse netrc: {e}")
