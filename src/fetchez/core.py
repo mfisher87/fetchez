@@ -135,14 +135,15 @@ def xml2py(node) -> Optional[Dict]:
 def get_userpass(authenticator_url: str) -> Tuple[Optional[str], Optional[str]]:
     """Retrieve username and password from netrc for a given URL."""
 
+    username = None
+    password = None
     try:
         info = netrc.netrc()
         host_auth = urllib.parse.urlparse(authenticator_url).hostname
         if host_auth is not None:
-            username, _, password = info.authenticators(host_auth)
-        else:
-            username = None
-            password = None
+            auth_results = info.authenticators(host_auth)
+            if auth_results is not None:
+                username, _, password = auth_results
     except Exception as e:
         if "No such file" not in str(e):
             logger.error(f"Failed to parse netrc: {e}")
