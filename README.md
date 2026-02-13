@@ -14,7 +14,7 @@
 
 ---
 
-### Why Fetchez?
+### ❓ Why Fetchez?
 
 Geospatial data access is fragmented. You often need one script to scrape a website for tide stations, another to download LiDAR from an S3 bucket, and a third to parse a local directory of shapefiles.
 
@@ -24,7 +24,7 @@ Geospatial data access is fragmented. You often need one script to scrape a webs
 * **Plugin Architecture:** The core engine is lightweight and agnostic. Data sources are just Python plugins, making it trivial to add support for new APIs or proprietary internal servers without forking the main codebase.
 * **Smart caching:** It handles the boring stuff like retries, caching, and checksum verification, so you can get back to the science.
 
-## Features
+## 🌎 Features
 
 * One command to fetch data from 50+ different modules, (SRTM, GMRT, NOAA NOS, USGS 3DEP, Copernicus, etc.).
 * Built-in download management handles retries, resume-on-failure, authentication, and mirror switching automatically.
@@ -37,13 +37,13 @@ Geospatial data access is fragmented. You often need one script to scrape a webs
 
 ---
 
-## Where does Fetchez fit?
+## 🧩 Where does Fetchez fit?
 
 The geospatial ecosystem is full of powerful processing engines, translators, tansformers, converters, etc. but they all assume you already have the data ready to use. Fetchez fills the gap between the internet, your hard drive and your workflow.
 
 In short: Use Fetchez to get the data so you can crunch the data.
 
-## Installation
+## 📦 Installation
 
 **From Pip/PyPi**
 
@@ -67,7 +67,7 @@ cd fetchez
 pip install .
 ```
 
-## CLI Usage
+## 💻 CLI Usage
 
 The primary command is fetchez.
 
@@ -113,7 +113,7 @@ fetchez -R loc:Miami charts --hook unzip --pipe-path
 ```bash
 fetchez --modules
 ```
-## Python API
+## 🐍 Python API
 
 Fetchez is designed to be easily integrated into Python workflows.
 
@@ -173,7 +173,7 @@ results = index.search(
 print(f"Found {len(results)} datasets.")
 ```
 
-## Processing Hooks
+## 🪝 Processing Hooks
 Fetchez includes a powerful Hook System that allows you to chain actions together. Hooks run in a pipeline, meaning the output of one hook (e.g. unzipping a file) becomes the input for the next (e.g. processing it).
 
 ### Common Built-in Hooks:
@@ -194,7 +194,7 @@ fetchez charts --hook unzip --hook pipe
 
 You can write your own custom hooks (e.g., to log downloads to a database or trigger a script) and drop them in ~/.fetchez/hooks/. See [CONTRIBUTING.md](https://github.com/ciresdem/fetchez/blob/main/CONTRIBUTING.md) for details.
 
-## Pipeline Presets (Macros)
+## 🔗 Pipeline Presets (Macros)
 Tired of typing the same chain of hooks every time? Presets allow you to define reusable workflow macros.
 
 Instead of running this long command:
@@ -242,7 +242,7 @@ fetchez --init-presets
 fetchez charts --my-clean-workflow
 ```
 
-## Supported Data Sources
+## 🗺 Supported Data Sources
 
 Fetchez supports over 50 modules categorized by data type. Run ```fetchez --modules``` to see the full list.
 
@@ -254,7 +254,7 @@ Fetchez supports over 50 modules categorized by data type. Run ```fetchez --modu
 | Reference | osm (OpenStreetMap), vdatum |
 | Generic | http (Direct URL), earthdata (NASA) |
 
-## Module-Specific Dependencies
+## 🛟 Module-Specific Dependencies
 
 Fetchez is designed to be lightweight. The core installation only includes what is strictly necessary to run the engine.
 
@@ -273,7 +273,7 @@ pip install "fetchez[full]"
 
 If you try to run a module without its required dependency, fetchez will exit with a helpful error message telling you exactly which extra group to install.
 
-## Plugins, Hooks & Extensions
+## 🐄 Plugins, Hooks & Extensions
 
 Need to fetch data from a specialized local server? Or maybe run a custom script immediately after every download? You don't need to fork the repo!
 
@@ -292,11 +292,11 @@ Drop your Python scripts into these configuration folders, and they will be auto
 
 See [CONTRIBUTING.md](https://github.com/ciresdem/fetchez/blob/main/CONTRIBUTING.md) for a full code example.
 
-## Contributing
+## 🛠 Contributing
 
 We welcome contributions! Please see [CONTRIBUTING.md](https://github.com/ciresdem/fetchez/blob/main/CONTRIBUTING.md) for details on how to register new modules or hooks with our metadata schema.
 
-## Disclaimer on Data Persistence
+## 🔱 Disclaimer on Data Persistence
 
 We provide the tools to locate and download data from authoritative public repositories, but we do not host the data ourselves.
 
@@ -308,7 +308,7 @@ Remote servers (like NOAA NCEI, USGS, or Copernicus) may experience downtime, th
 
 We strive to keep our modules robust and our index fresh. If you encounter a broken fetch or a changed endpoint, please open an issue. This helps the whole community keep up with the changes!
 
-## License
+## ⚖ License
 
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/ciresdem/fetchez/blob/main/LICENSE) file for details.
 
