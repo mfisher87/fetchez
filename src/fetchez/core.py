@@ -408,14 +408,15 @@ class Fetch:
         self.silent = logger.getEffectiveLevel() > logging.INFO
 
     def fetch_req(
-        self,
-        method: str = "GET",
-        params: Optional[Dict] = None,
-        data: Optional[Any] = None,
-        json: Optional[Dict] = None,
-        tries: int = 5,
-        timeout: Optional[Union[float, Tuple]] = None,
-        read_timeout: Optional[float] = None,
+            self,
+            method: str = "GET",
+            params: Optional[Dict] = None,
+            data: Optional[Any] = None,
+            json: Optional[Dict] = None,
+            tries: int = 5,
+            #timeout: Optional[Union[float, Tuple]] = None,
+            timeout: Optional[float] = None,
+            read_timeout: Optional[float] = None,
     ) -> Optional[requests.Response]:
         """Fetch src_url and return the requests object (iterative retry)."""
 
