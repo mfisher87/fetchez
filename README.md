@@ -19,10 +19,9 @@
 Geospatial data access is fragmented. You often need one script to scrape a website for tide stations, another to download LiDAR from an S3 bucket, and a third to parse a local directory of shapefiles.
 
 **Fetchez unifies this chaos.**
-* **One Command to Fetch Them All:** Whether you need bathymetry, topography, or water levels, the syntax is always the same: `fetchez [module] -R [region]`.
-* **Streaming First:** Fetchez is built for the cloud-native era. It prefers streaming data through standard pipes over downloading massive archives to disk.
-* **Plugin Architecture:** The core engine is lightweight and agnostic. Data sources are just Python plugins, making it trivial to add support for new APIs or proprietary internal servers without forking the main codebase.
-* **Smart caching:** It handles the boring stuff like retries, caching, and checksum verification, so you can get back to the science.
+* **One Command to Fetch Them All:** The syntax is always the same: `fetchez [module] -R [region]`.
+* **Streaming First:** Fetchez prefers streaming data through standard pipes over downloading massive archives to disk.
+* **Infrastructure as Code:** Define complex data pipelines, cropping, and gridding workflows using simple YAML "Recipes".
 
 ## 🌎 Features
 
@@ -45,26 +44,8 @@ In short: Use Fetchez to get the data so you can crunch the data.
 
 ## 📦 Installation
 
-**From Pip/PyPi**
-
 ```bash
 pip install fetchez
-```
-
-**From Source:**
-
-Download and install git (If you have not already): [git installation](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-
-```bash
-pip install git+https://github.com/continuous-dems/fetchez.git#egg=fetchez
-```
-
-Clone and install from source
-
-```bash
-git clone https://github.com/continuous-dems/fetchez.git
-cd fetchez
-pip install .
 ```
 
 ## 💻 CLI Usage
@@ -200,51 +181,54 @@ Tired of typing the same chain of hooks every time? Presets allow you to define 
 Instead of running this long command:
 
 ```bash
-
 fetchez copernicus --hook checksum:algo=sha256 --hook enrich --hook audit:file=log.json
 ```
 
-You can simply run:
+You can define a preset and simply run:
 
 ```bash
-
 fetchez copernicus --audit-full
 ```
 
-*** How to use them ***
+### How to create a Preset:
 
-Fetchez comes with a few built-in shortcuts (check fetchez --help to see them), but the real power comes from defining your own.
-
-* Initialize your config: Run this command to generate a starter configuration file at `~/.fetchez/presets.json`:
+* **Initialize your config:** Run this command to generate a starter configuration file at `~/.fetchez/presets.yaml`:
 
 ```bash
-
 fetchez --init-presets
 ```
 
-* Define your workflow: Edit the JSON file to create a named preset. A preset is just a list of hooks with arguments.
+* **Define your workflow:** Edit the `YAML` file to create a named preset. A preset is just a list of hooks with arguments.
 
-```json
-
-"my-clean-workflow": {
-  "help": "Unzip files and immediately remove the zip archive.",
-  "hooks": [
-    {"name": "unzip", "args": {"remove": "true"}},
-    {"name": "pipe"}
-  ]
-}
+```yaml
+presets:
+  audit-full:
+    help: Generate SHA256 hashes, enrichment, and a full JSON audit log.
+    hooks:
+    - name: checksum
+      args:
+        algo: sha256
+    - name: enrich
+    - name: audit
+      args:
+        file: audit_full.json
+  clean-download:
+    help: Unzip files and remove the original archive.
+    hooks:
+    - name: unzip
+      args:
+        remove: 'true'
 ```
 
-* Run it: Your new preset automatically appears as a CLI flag!
+**Run it:** Your new preset automatically appears as a CLI flag!
 
 ```bash
-
-fetchez charts --my-clean-workflow
+fetchez charts --audit-full --clean-download
 ```
 
 ## 🗺 Supported Data Sources
 
-Fetchez supports over 50 modules categorized by data type. Run ```fetchez --modules``` to see the full list.
+Fetchez supports over [50 modules](https://fetchez.readthedocs.io/en/latest/modules/index.html) categorized by data type. Run `fetchez --modules` to see the full list.
 
 | Category | Example Modules |
 |----|----|
